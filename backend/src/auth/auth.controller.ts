@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, UsePipes, ValidationPipe, Req } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, UsePipes, ValidationPipe, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
@@ -24,8 +24,8 @@ export class AuthController {
   async logout(@Req() req: any) {
     const user = req.user;
     if (!user || !user.id) {
-      return { message: 'ユーザー情報が見つかりません。' };
+      throw new UnauthorizedException('ユーザー情報が見つかりません。');
     }
-    return this.authService.logout(user.id);
+    return this.authService.logout(user.id, user.tv);
   }
 }

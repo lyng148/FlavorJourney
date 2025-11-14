@@ -8,7 +8,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private prisma: PrismaService) {
     const secret = process.env.JWT_SECRET;
     if (!secret) {
-      throw new Error('JWT_SECRET is not set');
+      throw new Error('JWT_SECRET environment variable is not set. Please add JWT_SECRET to your .env file.');
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
     const tokenVersionInToken = payload.tv ?? 0;
-    const tokenVersionInDb = user.token_version ?? 0;
+    const tokenVersionInDb = user.token_version;
     if (tokenVersionInToken !== tokenVersionInDb) {
       throw new UnauthorizedException('Token has been revoked');
     }
@@ -31,6 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       id: user.id,
       email: user.email,
       role: user.role,
+      tv: tokenVersionInToken,
     };
   }
 }

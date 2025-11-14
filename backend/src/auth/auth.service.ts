@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -123,14 +123,40 @@ export class AuthService {
     };
   }
 
-  async logout(userId: number) {
-    await this.prisma.users.update({
+  async logout(userId: number, tokenVersionFromToken?: number) {
+    if (typeof tokenVersionFromToken === 'number') {
+      const updated = await this.prisma.users.updateMany({
+        where: { id: userId, token_version: tokenVersionFromToken },
+        data: { token_version: tokenVersionFromToken + 1 },
+      });
+      if (updated.count === 0) {
+        const user = await this.prisma.users.findUnique({
+          where: { id: userId },
+          select: { token_version: true },
+        });
+        if (!user) {
+          throw new NotFoundException('ユーザーが存在しません。');
+        }
+        if ((user.token_version ?? 0) > tokenVersionFromToken) {
+          return { message: 'すでにログアウト済みです。' };
+        }
+        const retry = await this.prisma.users.updateMany({
+          where: { id: userId, token_version: tokenVersionFromToken },
+          data: { token_version: tokenVersionFromToken + 1 },
+        });
+        if (retry.count === 0) {
+          return { message: 'すでにログアウト済みです。' };
+        }
+      }
+      return { message: 'ログアウトしました。' };
+    }
+    const result = await this.prisma.users.updateMany({
       where: { id: userId },
-      data: {
-        token_version: { increment: 1 },
-      },
+      data: { token_version: { increment: 1 } },
     });
-
+    if (result.count === 0) {
+      throw new NotFoundException('ユーザーが存在しません。');
+    }
     return { message: 'ログアウトしました。' };
   }
 }
