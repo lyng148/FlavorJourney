@@ -22,6 +22,25 @@ export class ProfileService {
         return profileResponseDto;
     }
 
+    async editProfile(profileEditRequestDto: any): Promise<ProfileResponseDto> {
+        // Logic to edit profile information
+        const { id, location, birthday, email } = profileEditRequestDto;
+
+        const updateData: any = {};
+        if (location !== undefined) updateData.location = location;
+        if (birthday !== undefined) updateData.birthday = new Date(birthday);
+        if (email !== undefined) updateData.email = email;
+
+        const updatedProfile = await this.prismaService.users.update({
+            where: { id },
+            data: updateData,
+            include: { favorites: { include: { dish: { include: { category: true, region: true } } } } }
+        });
+
+        // Map the updated data to ProfileResponseDto
+        return this.mapProfileToDto(updatedProfile);
+    }
+
     mapProfileToDto(profile: any): ProfileResponseDto {
         const dto = new ProfileResponseDto();
         dto.id = profile.id;
@@ -30,7 +49,8 @@ export class ProfileService {
         dto.birthday = profile.birthday;
         dto.location = profile.location;
         dto.registration_date = profile.registration_date;
-        const favoritesDishes = profile.favorites.map((fav: any) => {
+        dto.consecutive_login_days = profile.consecutive_login_days;
+        const favoritedDishes = profile.favorites.map((fav: any) => {
             const dishDto = new Dish();
             dishDto.id = fav.dish.id;
             dishDto.name_japanese = fav.dish.name_japanese;
@@ -58,7 +78,10 @@ export class ProfileService {
             }
             return dishDto;
         });
-        dto.favorites = favoritesDishes;
+        dto.favoritedDishes = {
+            dishes: favoritedDishes,
+            numberOfDishes: favoritedDishes.length
+        };
         return dto;
     }
 }

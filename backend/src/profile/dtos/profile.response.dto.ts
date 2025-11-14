@@ -5,7 +5,11 @@ export class ProfileResponseDto {
     birthday?: Date;
     location?: string;
     registration_date?: Date;
-    favorites: Dish[];
+    consecutive_login_days?: number;
+    favoritedDishes?: {
+        dishes: Dish[];
+        numberOfDishes: number;
+    };
 }
 
 export class Dish {

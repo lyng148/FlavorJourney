@@ -6,7 +6,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
   @Post('register')
   @UsePipes(new ValidationPipe({ transform: true }))
   async register(@Body() registerDto: RegisterDto) {
