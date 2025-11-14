@@ -76,10 +76,11 @@ export class AuthService {
       throw new UnauthorizedException('メールアドレスまたはパスワードが正しくありません。'); 
     }
 
-    const payload = { 
-      email: user.email, 
-      sub: user.id, 
-      role: user.role 
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      tv: user.token_version ?? 0,
     };
 
     const now = new Date();
@@ -108,6 +109,8 @@ export class AuthService {
         },
     });
 
+    const redirectTo = user.role === UserRole.admin ? '/admin' : '/';
+
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -116,6 +119,18 @@ export class AuthService {
         username: user.username,
         role: user.role,
       },
+      redirectTo,
     };
+  }
+
+  async logout(userId: number) {
+    await this.prisma.users.update({
+      where: { id: userId },
+      data: {
+        token_version: { increment: 1 },
+      },
+    });
+
+    return { message: 'ログアウトしました。' };
   }
 }

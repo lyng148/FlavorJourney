@@ -1,7 +1,8 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, UsePipes, ValidationPipe, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,5 +17,15 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: any) {
+    const user = req.user;
+    if (!user || !user.id) {
+      return { message: 'ユーザー情報が見つかりません。' };
+    }
+    return this.authService.logout(user.id);
   }
 }
