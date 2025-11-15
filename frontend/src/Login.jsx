@@ -30,7 +30,7 @@ export default function Login({ onSwitchToRegister, onLoginSuccess }) {
 
       // expected: { access_token, user, redirectTo }
       if (data.access_token) {
-        localStorage.setItem('access_token', data.access_token)
+        // Access token is set via httpOnly cookie by the backend for security.
         localStorage.setItem('user', JSON.stringify(data.user || {}))
         // call onLoginSuccess if provided to let SPA switch view without reload
         if (onLoginSuccess && typeof onLoginSuccess === 'function') {
