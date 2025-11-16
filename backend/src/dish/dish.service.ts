@@ -525,7 +525,7 @@ export class DishService {
   }
 
   async getById(dishId: number): Promise<DishResponseDto> {
-    const dish = await this.prisma.dishes.findUnique({
+    const dish = await this.prisma.dishes.findFirst({
       where: { id: dishId, status: 'approved' },
       include: {
         category: true,
@@ -537,7 +537,7 @@ export class DishService {
     });
 
     if (!dish) {
-      throw new NotFoundException(`IDの料理が見つかりません: ${dishId}`);
+      throw new NotFoundException(`指定された料理は見つかりませんでした`);
     }
 
     return {
