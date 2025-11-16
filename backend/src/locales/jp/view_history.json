@@ -1,0 +1,13 @@
+{
+  "errors": {
+    "dish_not_found": "料理が見つかりません。",
+    "user_not_found": "ユーザーが見つかりません。"
+  },
+  "messages": {
+    "deleted": "履歴を削除しました。"
+  },
+  "validation": {
+    "dish_id_number": "料理IDは数字でなければなりません。",
+    "dish_id_required": "料理IDは必須項目です。"
+  }
+}

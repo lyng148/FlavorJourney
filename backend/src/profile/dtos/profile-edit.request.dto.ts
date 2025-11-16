@@ -1,20 +1,39 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class ProfileEditRequestDto {
-    @IsNotEmpty({ message: 'IDは必須です。' }) // ID không được để trống
-    @IsNumber({}, { message: 'IDは数値である必要があります。' }) // ID phải là một số
-    id: number;
+  @IsNotEmpty({
+    message: i18nValidationMessage('profile.validation.id_required'),
+  })
+  @IsNumber(
+    {},
+    { message: i18nValidationMessage('profile.validation.id_number') },
+  )
+  id: number;
 
-    @IsOptional()
-    @IsString({ message: '場所は文字列である必要があります。' }) // Vị trí phải là một chuỗi
-    location?: string;
+  @IsOptional()
+  @IsString({
+    message: i18nValidationMessage('profile.validation.location_string'),
+  })
+  location?: string;
 
-    // birthday format: 'YYYY-MM-DD'
-    @IsOptional()
-    @IsString({ message: '誕生日は文字列である必要があります。' }) // Ngày sinh phải là một chuỗi
-    birthday?: string;
+  // birthday format: 'YYYY-MM-DD'
+  @IsOptional()
+  @IsString({
+    message: i18nValidationMessage('profile.validation.birthday_string'),
+  })
+  birthday?: string;
 
-    @IsOptional()
-    @IsEmail({}, { message: 'メールアドレスの形式が正しくありません。' }) // Email không hợp lệ
-    email?: string;
+  @IsOptional()
+  @IsEmail(
+    {},
+    { message: i18nValidationMessage('profile.validation.email_invalid') },
+  )
+  email?: string;
 }

@@ -1,54 +1,55 @@
-import { useState } from 'react'
-import './Login.css'
+import { useState } from "react";
+import "./Login.css";
 
 export default function Login({ onSwitchToRegister, onLoginSuccess }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [saveLogin, setSaveLogin] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [saveLogin, setSaveLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+  const lang = localStorage.getItem("lang") || "vi";
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-lang": lang },
         body: JSON.stringify({ email, password, saveLoginInfo: !!saveLogin }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        const msg = data?.message || data?.error || 'Login failed'
-        setError(msg)
-        setLoading(false)
-        return
+        const msg = data?.message || data?.error || "Login failed";
+        setError(msg);
+        setLoading(false);
+        return;
       }
 
       // expected: { access_token, user, redirectTo }
       if (data.access_token) {
-        localStorage.setItem('access_token', data.access_token)
-        localStorage.setItem('user', JSON.stringify(data.user || {}))
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user || {}));
         // call onLoginSuccess if provided to let SPA switch view without reload
-        if (onLoginSuccess && typeof onLoginSuccess === 'function') {
-          onLoginSuccess()
+        if (onLoginSuccess && typeof onLoginSuccess === "function") {
+          onLoginSuccess();
         } else {
           // fallback: redirect to backend-provided path or home
-          const redirect = data.redirectTo || '/'
-          window.location.href = redirect
+          const redirect = data.redirectTo || "/";
+          window.location.href = redirect;
         }
       } else {
-        setError('Login succeeded but no token returned')
+        setError("Login succeeded but no token returned");
       }
     } catch (err) {
-      setError(err.message || 'Network error')
+      setError(err.message || "Network error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="login-page">
@@ -84,10 +85,14 @@ export default function Login({ onSwitchToRegister, onLoginSuccess }) {
               />
               <span>ログイン状態を保持する</span>
             </label>
-            <a className="forgot" href="#">パスワードをお忘れですか？</a>
+            <a className="forgot" href="#">
+              パスワードをお忘れですか？
+            </a>
           </div>
 
-          <button className="btn-primary" type="submit" disabled={loading}>{loading ? '読み込み中...' : 'ログイン'}</button>
+          <button className="btn-primary" type="submit" disabled={loading}>
+            {loading ? "読み込み中..." : "ログイン"}
+          </button>
           {error && <div className="form-error">{error}</div>}
 
           <p className="muted">まだアカウントがありませんか？</p>
@@ -101,5 +106,5 @@ export default function Login({ onSwitchToRegister, onLoginSuccess }) {
         </form>
       </div>
     </div>
-  )
+  );
 }

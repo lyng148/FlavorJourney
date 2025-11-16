@@ -1,0 +1,12 @@
+{
+  "errors": {
+    "user_not_found": "Không tìm thấy người dùng."
+  },
+  "validation": {
+    "id_required": "ID là bắt buộc.",
+    "id_number": "ID phải là số.",
+    "location_string": "Vị trí phải là chuỗi.",
+    "birthday_string": "Ngày sinh phải là chuỗi (YYYY-MM-DD).",
+    "email_invalid": "Email không hợp lệ."
+  }
+}

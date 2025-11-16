@@ -1,7 +1,15 @@
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class SaveViewHistoryRequestDto {
-    @IsNumber({}, { message: "料理IDは数字でなければなりません" })
-    @IsNotEmpty({ message: "料理IDは必須項目です" })
-    dish_id: number;
+  @IsNumber(
+    {},
+    {
+      message: i18nValidationMessage('view_history.validation.dish_id_number'),
+    },
+  )
+  @IsNotEmpty({
+    message: i18nValidationMessage('view_history.validation.dish_id_required'),
+  })
+  dish_id: number;
 }

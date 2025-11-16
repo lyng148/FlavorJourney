@@ -1,0 +1,7 @@
+{
+  "errors": {
+    "invalid_category": "Danh mục không hợp lệ.",
+    "invalid_region": "Khu vực không hợp lệ.",
+    "name_required": "Tên món ăn là bắt buộc."
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "errors": {
+    "invalid_category": "カテゴリーが無効です。",
+    "invalid_region": "地域が無効です。",
+    "name_required": "料理名は必須です。"
+  }
+}

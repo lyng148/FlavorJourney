@@ -1,2 +1,4 @@
 backend/API_DOCUMENTATION.md
 backend/AWS_S3_SETUP.md
+.vscode
+.gitignore

@@ -1,0 +1,13 @@
+{
+  "errors": {
+    "dish_not_found": "Không tìm thấy món ăn.",
+    "user_not_found": "Không tìm thấy người dùng."
+  },
+  "messages": {
+    "deleted": "Đã xóa lịch sử."
+  },
+  "validation": {
+    "dish_id_number": "Mã món ăn phải là số.",
+    "dish_id_required": "Mã món ăn là bắt buộc."
+  }
+}

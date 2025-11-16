@@ -1,12 +1,28 @@
-import { IsEmail, IsNotEmpty, MinLength, IsBoolean, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  IsBoolean,
+  IsOptional,
+} from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class LoginDto {
-  @IsEmail({}, { message: 'メールアドレスの形式が正しくありません。' }) // Email không hợp lệ
-  @IsNotEmpty({ message: 'メールアドレスは必須です。' }) // Email không được để trống
+  @IsEmail(
+    {},
+    { message: i18nValidationMessage('auth.validation.email_invalid') },
+  )
+  @IsNotEmpty({
+    message: i18nValidationMessage('auth.validation.email_required'),
+  })
   email: string;
 
-  @IsNotEmpty({ message: 'パスワードは必須です。' }) // Mật khẩu không được để trống
-  @MinLength(1, { message: 'パスワードが無効です。' }) // Mật khẩu không hợp lệ
+  @IsNotEmpty({
+    message: i18nValidationMessage('auth.validation.password_required'),
+  })
+  @MinLength(1, {
+    message: i18nValidationMessage('auth.validation.password_min'),
+  })
   password: string;
 
   @IsOptional()

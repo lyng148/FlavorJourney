@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { I18nValidationPipe } from 'nestjs-i18n';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
@@ -8,11 +9,13 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Global validation pipe
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: false,
-  }));
+  app.useGlobalPipes(
+    new I18nValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: false,
+    }),
+  );
 
   // Serve static files for uploads
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
@@ -27,6 +30,5 @@ async function bootstrap() {
     credentials: true,
   });
   await app.listen(process.env.PORT ?? 3000);
-
 }
 bootstrap();

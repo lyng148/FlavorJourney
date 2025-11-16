@@ -1,0 +1,12 @@
+{
+  "errors": {
+    "user_not_found": "ユーザーが見つかりません。"
+  },
+  "validation": {
+    "id_required": "IDは必須です。",
+    "id_number": "IDは数値である必要があります。",
+    "location_string": "場所は文字列である必要があります。",
+    "birthday_string": "誕生日は文字列である必要があります。",
+    "email_invalid": "メールアドレスの形式が正しくありません。"
+  }
+}

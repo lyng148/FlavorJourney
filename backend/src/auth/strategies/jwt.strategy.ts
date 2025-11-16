@@ -1,14 +1,20 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service'; 
+import { PrismaService } from 'src/prisma/prisma.service';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private prisma: PrismaService) {
+  constructor(
+    private prisma: PrismaService,
+    private readonly i18n: I18nService,
+  ) {
     const secret = process.env.JWT_SECRET;
     if (!secret) {
-      throw new Error('JWT_SECRET environment variable is not set. Please add JWT_SECRET to your .env file.');
+      throw new Error(
+        'JWT_SECRET environment variable is not set. Please add JWT_SECRET to your .env file.',
+      );
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,14 +24,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const user = await this.prisma.users.findUnique({ where: { id: payload.sub } });
+    const user = await this.prisma.users.findUnique({
+      where: { id: payload.sub },
+    });
     if (!user) {
       throw new UnauthorizedException();
     }
     const tokenVersionInToken = payload.tv ?? 0;
     const tokenVersionInDb = user.token_version;
     if (tokenVersionInToken !== tokenVersionInDb) {
-      throw new UnauthorizedException('Token has been revoked');
+      throw new UnauthorizedException(
+        await this.i18n.t('auth.errors.token_revoked'),
+      );
     }
     return {
       id: user.id,

@@ -1,12 +1,25 @@
-import { Body, Controller, Post, UseGuards, UsePipes, ValidationPipe, Req, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { I18nService } from 'nestjs-i18n';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private readonly i18n: I18nService,
+  ) {}
   @Post('register')
   @UsePipes(new ValidationPipe({ transform: true }))
   async register(@Body() registerDto: RegisterDto) {
@@ -24,7 +37,9 @@ export class AuthController {
   async logout(@Req() req: any) {
     const user = req.user;
     if (!user || !user.id) {
-      throw new UnauthorizedException('ユーザー情報が見つかりません。');
+      throw new UnauthorizedException(
+        await this.i18n.t('auth.errors.user_info_missing'),
+      );
     }
     return this.authService.logout(user.id, user.tv);
   }
