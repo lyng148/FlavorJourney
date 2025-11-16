@@ -22,10 +22,13 @@ export class DishService {
     private readonly i18n: I18nService,
   ) {}
 
-  async createDish(createDishDto: CreateDishDto, userId: number) {
+  async createDish(
+    createDishDto: CreateDishDto,
+    userId: number,
+    imageUrl?: string,
+  ) {
     const { category_id, region_id } = createDishDto;
 
-    // Kiểm tra category tồn tại nếu có
     if (category_id) {
       const category = await this.prisma.categories.findUnique({
         where: { id: category_id },
@@ -36,7 +39,6 @@ export class DishService {
         );
     }
 
-    // Kiểm tra region tồn tại nếu có
     if (region_id) {
       const region = await this.prisma.regions.findUnique({
         where: { id: region_id },
@@ -47,7 +49,6 @@ export class DishService {
         );
     }
 
-    // Kiểm tra tên món ăn
     if (!createDishDto.name_japanese || !createDishDto.name_vietnamese) {
       throw new BadRequestException(
         await this.i18n.t('dish.errors.name_required'),
@@ -60,6 +61,7 @@ export class DishService {
         submitted_by: userId,
         status: 'pending',
         submitted_at: new Date(),
+        image_url: imageUrl || null, // thêm trường image_url
       },
       select: {
         id: true,
@@ -67,6 +69,7 @@ export class DishService {
         name_vietnamese: true,
         status: true,
         submitted_at: true,
+        image_url: true, // trả về URL ảnh luôn
       },
     });
 

@@ -22,18 +22,36 @@ import { UpdateDishDto } from './dtos/update-dish.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UseInterceptors, UploadedFile } from '@nestjs/common/decorators';
+import { UploadService } from '../upload/upload.service';
 
 @Controller('dishes')
 export class DishController {
-  constructor(private readonly dishService: DishService) {}
+  constructor(
+    private readonly dishService: DishService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async addDish(@Body() createDishDto: CreateDishDto, @Req() req) {
+  @UseInterceptors(FileInterceptor('image'))
+  async addDish(
+    @Body() createDishDto: CreateDishDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req,
+  ) {
     const userId = req.user.id;
-    return this.dishService.createDish(createDishDto, userId);
+
+    let imageUrl: string | undefined;
+    if (file) {
+      imageUrl = await this.uploadService.uploadDishImage(file);
+    }
+
+    return this.dishService.createDish(createDishDto, userId, imageUrl);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async list(
     @Query() query: ListDishesQueryDto,
@@ -82,6 +100,7 @@ export class DishController {
     return this.dishService.deleteDishSubmission(dishId, userId, userRole);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':dishId')
   async getDishByUser(
     @Param('dishId', ParseIntPipe) id: number,

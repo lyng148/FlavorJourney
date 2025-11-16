@@ -7,6 +7,7 @@ import {
   Min,
   Max,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateDishDto {
   @IsString()
@@ -34,39 +35,37 @@ export class CreateDishDto {
   description_romaji?: string;
 
   @IsOptional()
-  @IsUrl()
-  image_url?: string;
-
-  @IsOptional()
   @IsInt()
+  @Type(() => Number)
   category_id?: number;
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   region_id?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(5)
+  @Max(10)
   spiciness_level?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(5)
+  @Max(10)
   saltiness_level?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(5)
+  @Max(10)
   sweetness_level?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(5)
+  @Max(10)
   sourness_level?: number;
 
   @IsOptional()
