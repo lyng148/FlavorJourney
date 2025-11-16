@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { ProfileResponseDto } from './dtos/profile.response.dto';
 import { ProfileEditRequestDto } from './dtos/profile-edit.request.dto';
@@ -11,7 +11,7 @@ export class ProfileController {
 
   @Get(':id')
   getProfile(
-    @Param('id') id: number
+    @Param('id', ParseIntPipe) id: number
   ): Promise<ProfileResponseDto> {
     return this.profileService.getProfile(id);
   }

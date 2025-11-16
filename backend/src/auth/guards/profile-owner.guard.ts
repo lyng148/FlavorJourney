@@ -1,11 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProfileOwnerGuard implements CanActivate {
-    constructor(private prismaService: PrismaService) { }
+    constructor() { }
 
     canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest();
@@ -16,7 +15,6 @@ export class ProfileOwnerGuard implements CanActivate {
         if (!userId || !profileId) {
             return false;
         }
-        console.log('ProfileOwnerGuard: ', { userId, profileId });
         if (userId != profileId) {
             return false;
         }
