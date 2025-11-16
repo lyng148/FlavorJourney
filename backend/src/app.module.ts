@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProfileModule } from './profile/profile.module';
@@ -28,15 +29,21 @@ import * as fs from 'fs';
         new HeaderResolver(['x-lang']),
         AcceptLanguageResolver,
       ],
+import { UploadModule } from './upload/upload.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
     ProfileModule,
     PrismaModule,
     CommonModule,
     AuthModule,
     DishModule,
-    ViewHistoryModule,
+    UploadModule,
+    ViewHistoryModule
   ],
-
   controllers: [AppController],
   providers: [AppService],
 })

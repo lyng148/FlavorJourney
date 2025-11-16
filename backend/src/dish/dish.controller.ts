@@ -1,7 +1,27 @@
-import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { DishService } from './dish.service';
 import { CreateDishDto } from './dtos/create-dish.dto';
+import { ListDishesQueryDto } from './dtos/list-dish-query.dto';
+import {
+  PaginatedDishesResponse,
+  DishResponseDto,
+} from './dtos/list-dish-response.dto';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  UseGuards,
+  Put,
+  Param,
+  Query,
+  Get,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { UpdateDishDto } from './dtos/update-dish.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('dishes')
 export class DishController {
@@ -12,5 +32,60 @@ export class DishController {
   async addDish(@Body() createDishDto: CreateDishDto, @Req() req) {
     const userId = req.user.id;
     return this.dishService.createDish(createDishDto, userId);
+  }
+
+  @Get()
+  async list(
+    @Query() query: ListDishesQueryDto,
+  ): Promise<PaginatedDishesResponse> {
+    return this.dishService.list(query);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  async updateDishSubmission(
+    @Param('id') id: string,
+    @Body() updateDishDto: UpdateDishDto,
+    @Req() req,
+  ) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    const dishId = parseInt(id, 10);
+    return this.dishService.updateDishSubmission(
+      dishId,
+      updateDishDto,
+      userId,
+      userRole,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get()
+  async getAllDishSubmissions() {
+    return this.dishService.getAllDishSubmissions();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('my-submissions')
+  async getMySubmissions(@Req() req) {
+    const userId = req.user.id;
+    return this.dishService.getMySubmissions(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteDishSubmission(@Param('id') id: string, @Req() req) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    const dishId = parseInt(id, 10);
+    return this.dishService.deleteDishSubmission(dishId, userId, userRole);
+  }
+
+  @Get(':dishId')
+  async getDishByUser(
+    @Param('dishId', ParseIntPipe) id: number,
+  ): Promise<DishResponseDto> {
+    return this.dishService.getById(id);
   }
 }
