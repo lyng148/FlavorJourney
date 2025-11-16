@@ -1,16 +1,31 @@
 import { DishService } from './dish.service';
 import { CreateDishDto } from './dtos/create-dish.dto';
 import { ListDishesQueryDto } from './dtos/list-dish-query.dto';
-import { PaginatedDishesResponse } from './dtos/list-dish-response.dto';
-import { Controller, Post, Body, Req, UseGuards, Put, Param, Query, Get, Delete } from '@nestjs/common';
+import {
+  PaginatedDishesResponse,
+  DishResponseDto,
+} from './dtos/list-dish-response.dto';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  UseGuards,
+  Put,
+  Param,
+  Query,
+  Get,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { UpdateDishDto } from './dtos/update-dish.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
-@Controller('dish-submissions')
+@Controller('dishes')
 export class DishController {
-  constructor(private readonly dishService: DishService) { }
+  constructor(private readonly dishService: DishService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -36,7 +51,12 @@ export class DishController {
     const userId = req.user.id;
     const userRole = req.user.role;
     const dishId = parseInt(id, 10);
-    return this.dishService.updateDishSubmission(dishId, updateDishDto, userId, userRole);
+    return this.dishService.updateDishSubmission(
+      dishId,
+      updateDishDto,
+      userId,
+      userRole,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -60,5 +80,12 @@ export class DishController {
     const userRole = req.user.role;
     const dishId = parseInt(id, 10);
     return this.dishService.deleteDishSubmission(dishId, userId, userRole);
+  }
+
+  @Get(':dishId')
+  async getDishByUser(
+    @Param('dishId', ParseIntPipe) id: number,
+  ): Promise<DishResponseDto> {
+    return this.dishService.getById(id);
   }
 }
