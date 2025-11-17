@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "./sidebar.css";
 
 export default function Sidebar({ active = "home", onNavigate, onLogout }) {
+  const { t } = useTranslation("sidebar");
   const Item = ({ id, icon, label }) => (
     <div
       className={`fj-item ${active === id ? "active" : ""}`}
@@ -28,13 +30,13 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
         <span className="badge" aria-hidden>
           📍
         </span>
-        <span>味の旅</span>
+        <span>{t("brand")}</span>
       </div>
 
       <nav className="fj-nav" aria-label="Sidebar Navigation">
         <Item
           id="home"
-          label="ホーム"
+          label={t("home")}
           icon={
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
               <path
@@ -48,7 +50,7 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
         />
         <Item
           id="search"
-          label="検索"
+          label={t("search")}
           icon={
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
               <circle
@@ -68,7 +70,7 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
         />
         <Item
           id="register"
-          label="登録"
+          label={t("register")}
           icon={
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
               <path
@@ -82,7 +84,7 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
         />
         <Item
           id="favorites"
-          label="お気に入り"
+          label={t("favorites")}
           icon={
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
               <path d="M12.1 21.35 10 19.28C5.4 14.36 2 11.28 2 7.5 2 5 4 3 6.5 3 8.04 3 9.54 3.81 10.35 5.08 11.16 3.81 12.66 3 14.2 3 16.7 3 18.7 5 18.7 7.5c0 3.78-3.4 6.86-7.99 11.78l-1.61 2.07z" />
@@ -91,7 +93,7 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
         />
         <Item
           id="profile"
-          label="プロフィール"
+          label={t("profile")}
           icon={
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
               <circle
@@ -120,7 +122,7 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
           onClick={() => onLogout && onLogout()}
           role="button"
           tabIndex={0}
-          aria-label="ログアウト"
+          aria-label={t("logout")}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") onLogout && onLogout();
           }}
@@ -141,7 +143,7 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
               />
             </svg>
           </span>
-          <span>ログアウト</span>
+          <span>{t("logout")}</span>
         </div>
       </div>
     </aside>

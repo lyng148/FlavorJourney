@@ -7,20 +7,21 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDishDto } from './dtos/create-dish.dto';
 import { I18nService } from 'nestjs-i18n';
+import { Prisma, DishStatus } from '@prisma/client';
 import { ListDishesQueryDto } from './dtos/list-dish-query.dto';
 import {
   DishResponseDto,
   PaginatedDishesResponse,
 } from './dtos/list-dish-response.dto';
-import { Prisma } from '@prisma/client';
 import { UpdateDishDto } from './dtos/update-dish.dto';
+import { GetAllDishSubmissionsQueryDto } from './dtos/get-all-dish-submissions-query.dto';
 
 @Injectable()
 export class DishService {
   constructor(
     private prisma: PrismaService,
     private readonly i18n: I18nService,
-  ) {}
+  ) { }
 
   async createDish(
     createDishDto: CreateDishDto,
@@ -106,19 +107,19 @@ export class DishService {
     const [regionIds, categoryIds] = await Promise.all([
       query.region?.length
         ? this.prisma.regions
-            .findMany({
-              where: { code: { in: query.region } },
-              select: { id: true },
-            })
-            .then((r) => r.map((item) => item.id))
+          .findMany({
+            where: { code: { in: query.region } },
+            select: { id: true },
+          })
+          .then((r) => r.map((item) => item.id))
         : Promise.resolve(undefined),
       query.category?.length
         ? this.prisma.categories
-            .findMany({
-              where: { slug: { in: query.category } },
-              select: { id: true },
-            })
-            .then((c) => c.map((item) => item.id))
+          .findMany({
+            where: { slug: { in: query.category } },
+            select: { id: true },
+          })
+          .then((c) => c.map((item) => item.id))
         : Promise.resolve(undefined),
     ]);
 
@@ -164,9 +165,9 @@ export class DishService {
         status: 'approved',
         OR: query.search
           ? [
-              { name_japanese: { contains: query.search } },
-              { name_vietnamese: { contains: query.search } },
-            ]
+            { name_japanese: { contains: query.search } },
+            { name_vietnamese: { contains: query.search } },
+          ]
           : undefined,
         category_id: categoryIds ? { in: categoryIds } : undefined,
         region_id: regionIds ? { in: regionIds } : undefined,
@@ -192,18 +193,18 @@ export class DishService {
 
       category: d.category
         ? {
-            id: d.category.id,
-            name_japanese: d.category.name_japanese,
-            name_vietnamese: d.category.name_vietnamese,
-          }
+          id: d.category.id,
+          name_japanese: d.category.name_japanese,
+          name_vietnamese: d.category.name_vietnamese,
+        }
         : undefined,
 
       region: d.region
         ? {
-            id: d.region.id,
-            name_japanese: d.region.name_japanese,
-            name_vietnamese: d.region.name_vietnamese,
-          }
+          id: d.region.id,
+          name_japanese: d.region.name_japanese,
+          name_vietnamese: d.region.name_vietnamese,
+        }
         : undefined,
 
       spiciness_level: d.spiciness_level ?? undefined,
@@ -241,7 +242,9 @@ export class DishService {
     });
 
     if (!existingDish) {
-      throw new NotFoundException('料理が見つかりません');
+      throw new NotFoundException(
+        await this.i18n.t('dish.errors.dish_not_found'),
+      );
     }
 
     const isAdmin = userRole === 'admin';
@@ -251,17 +254,19 @@ export class DishService {
     if (!isAdmin) {
       if (!isOwner) {
         throw new ForbiddenException(
-          '他のユーザーが提出した料理は更新できません',
+          await this.i18n.t('dish.errors.cannot_update_others_dish'),
         );
       }
       if (existingDish.status !== 'pending') {
         throw new BadRequestException(
-          '承認済みまたは却下された料理は更新できません',
+          await this.i18n.t('dish.errors.cannot_update_approved_or_rejected'),
         );
       }
       // Regular users cannot change status
       if (updateDishDto.status) {
-        throw new ForbiddenException('ステータスを変更する権限がありません');
+        throw new ForbiddenException(
+          await this.i18n.t('dish.errors.no_permission_to_change_status'),
+        );
       }
     }
 
@@ -290,19 +295,30 @@ export class DishService {
       // Add rejection reason if rejecting
       if (status === 'rejected') {
         if (!rejection_reason) {
-          throw new BadRequestException('却下理由が必要です');
+          throw new BadRequestException(
+            await this.i18n.t('dish.errors.rejection_reason_required'),
+          );
         }
         updateData.rejection_reason = rejection_reason;
       } else {
         updateData.rejection_reason = null;
       }
-
+      // Add reviewed_by and reviewed_at if approving
+      updateData.reviewed_by = userId;
+      updateData.reviewed_at = new Date();
+      if (status === 'approved') {
+        updateData.rejection_reason = null;
+        updateData.reviewed_by = userId;
+        updateData.reviewed_at = new Date();
+      }
       // Validate category if provided
       if (category_id !== undefined) {
         const category = await this.prisma.categories.findUnique({
           where: { id: category_id },
         });
-        if (!category) throw new BadRequestException('カテゴリーが無効です');
+        if (!category) throw new BadRequestException(
+          await this.i18n.t('dish.errors.invalid_category'),
+        );
         updateData.category_id = category_id;
       }
 
@@ -311,7 +327,9 @@ export class DishService {
         const region = await this.prisma.regions.findUnique({
           where: { id: region_id },
         });
-        if (!region) throw new BadRequestException('地域が無効です');
+        if (!region) throw new BadRequestException(
+          await this.i18n.t('dish.errors.invalid_region'),
+        );
         updateData.region_id = region_id;
       }
 
@@ -356,7 +374,9 @@ export class DishService {
       const category = await this.prisma.categories.findUnique({
         where: { id: category_id },
       });
-      if (!category) throw new BadRequestException('カテゴリーが無効です');
+      if (!category) throw new BadRequestException(
+        await this.i18n.t('dish.errors.invalid_category'),
+      );
     }
 
     // Validate region if provided
@@ -364,7 +384,9 @@ export class DishService {
       const region = await this.prisma.regions.findUnique({
         where: { id: region_id },
       });
-      if (!region) throw new BadRequestException('地域が無効です');
+      if (!region) throw new BadRequestException(
+        await this.i18n.t('dish.errors.invalid_region'),
+      );
     }
 
     const updateData: any = { ...otherFields };
@@ -401,63 +423,81 @@ export class DishService {
     return updatedDish;
   }
 
-  async getAllDishSubmissions() {
+  async getAllDishSubmissions(query: GetAllDishSubmissionsQueryDto): Promise<PaginatedDishesResponse> {
+    const page = query.page ? Number(query.page) : 1;
+    const limit = query.limit ? Number(query.limit) : 20;
+    const skip = (page - 1) * limit;
+
     const dishes = await this.prisma.dishes.findMany({
-      select: {
-        id: true,
-        name_japanese: true,
-        name_vietnamese: true,
-        name_romaji: true,
-        description_japanese: true,
-        description_vietnamese: true,
-        description_romaji: true,
-        image_url: true,
-        category_id: true,
-        region_id: true,
-        spiciness_level: true,
-        saltiness_level: true,
-        sweetness_level: true,
-        sourness_level: true,
-        ingredients: true,
-        how_to_eat: true,
-        status: true,
-        submitted_by: true,
-        reviewed_by: true,
-        submitted_at: true,
-        reviewed_at: true,
-        rejection_reason: true,
-        category: {
-          select: {
-            id: true,
-            name_japanese: true,
-            name_vietnamese: true,
-          },
-        },
-        region: {
-          select: {
-            id: true,
-            name_japanese: true,
-            name_vietnamese: true,
-          },
-        },
-        users_dishes_submitted_byTousers: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
+      where: {
+        ...(query.status && { status: query.status as DishStatus }),
       },
       orderBy: {
         submitted_at: 'desc',
       },
+      skip,
+      take: limit,
+      include: {
+        category: true,
+        region: true,
+        users_dishes_submitted_byTousers: {
+          select: {
+            username: true,
+          },
+        },
+      },
     });
 
-    return dishes.map((dish) => ({
-      ...dish,
-      submitter: dish.users_dishes_submitted_byTousers,
-      users_dishes_submitted_byTousers: undefined,
+    const total = await this.prisma.dishes.count({
+      where: {
+        ...(query.status && { status: query.status as DishStatus }),
+      },
+    });
+
+    const data: DishResponseDto[] = dishes.map((d) => ({
+      id: d.id,
+      name_japanese: d.name_japanese,
+      name_vietnamese: d.name_vietnamese,
+      name_romaji: d.name_romaji ?? undefined,
+      description_japanese: d.description_japanese ?? undefined,
+      description_vietnamese: d.description_vietnamese ?? undefined,
+      description_romaji: d.description_romaji ?? undefined,
+      image_url: d.image_url ?? undefined,
+      submitted_id: {
+        username: (d as any).users_dishes_submitted_byTousers.username,
+      },
+      category: (d as any).category
+        ? {
+          id: (d as any).category.id,
+          name_japanese: (d as any).category.name_japanese,
+          name_vietnamese: (d as any).category.name_vietnamese,
+        }
+        : undefined,
+      region: (d as any).region
+        ? {
+          id: (d as any).region.id,
+          name_japanese: (d as any).region.name_japanese,
+          name_vietnamese: (d as any).region.name_vietnamese,
+        }
+        : undefined,
+      spiciness_level: d.spiciness_level ?? undefined,
+      saltiness_level: d.saltiness_level ?? undefined,
+      sweetness_level: d.sweetness_level ?? undefined,
+      sourness_level: d.sourness_level ?? undefined,
+      ingredients: d.ingredients ?? '',
+      how_to_eat: d.how_to_eat ?? '',
+      view_count: d.view_count ?? 0,
+      submitted_at: d.submitted_at ?? undefined,
+      reviewed_at: d.reviewed_at ?? undefined,
     }));
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async getMySubmissions(userId: number) {
@@ -518,13 +558,15 @@ export class DishService {
     });
 
     if (!existingDish) {
-      throw new NotFoundException('料理が見つかりません');
+      throw new NotFoundException(
+        await this.i18n.t('dish.errors.dish_not_found'),
+      );
     }
 
-    // Only the owner can delete their dish
-    if (existingDish.submitted_by !== userId) {
+    // Only the owner or admin can delete their dish
+    if (existingDish.submitted_by !== userId && userRole !== 'admin') {
       throw new ForbiddenException(
-        '他のユーザーが提出した料理は削除できません',
+        await this.i18n.t('dish.errors.cannot_delete_others_dish'),
       );
     }
 
@@ -534,7 +576,7 @@ export class DishService {
     });
 
     return {
-      message: '料理が正常に削除されました',
+      message: await this.i18n.t('dish.success.dish_deleted_successfully'),
       id,
     };
   }

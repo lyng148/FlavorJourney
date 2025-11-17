@@ -6,8 +6,8 @@
     "deleteOutDir": true,
     "assets": [
       {
-        "include": "src/locales/**/*",
-        "outDir": "dist"
+        "include": "locales/**/*",
+        "outDir": "dist/src"
       }
     ]
   }

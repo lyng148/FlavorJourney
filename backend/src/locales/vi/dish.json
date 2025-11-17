@@ -2,6 +2,15 @@
   "errors": {
     "invalid_category": "Danh mục không hợp lệ.",
     "invalid_region": "Khu vực không hợp lệ.",
-    "name_required": "Tên món ăn là bắt buộc."
+    "name_required": "Tên món ăn là bắt buộc.",
+    "dish_not_found": "Món ăn không tìm thấy",
+    "cannot_update_others_dish": "Không thể cập nhật món ăn của người khác",
+    "cannot_update_approved_or_rejected": "Không thể cập nhật món ăn đã được duyệt hoặc từ chối",
+    "no_permission_to_change_status": "Không có quyền thay đổi trạng thái",
+    "rejection_reason_required": "Lý do từ chối là bắt buộc",
+    "cannot_delete_others_dish": "Không thể xóa món ăn của người khác"
+  },
+  "success": {
+    "dish_deleted_successfully": "Món ăn đã được xóa thành công"
   }
 }

@@ -2,6 +2,15 @@
   "errors": {
     "invalid_category": "カテゴリーが無効です。",
     "invalid_region": "地域が無効です。",
-    "name_required": "料理名は必須です。"
+    "name_required": "料理名は必須です。",
+    "dish_not_found": "料理が見つかりません",
+    "cannot_update_others_dish": "他のユーザーが提出した料理は更新できません",
+    "cannot_update_approved_or_rejected": "承認済みまたは却下された料理は更新できません",
+    "no_permission_to_change_status": "ステータスを変更する権限がありません",
+    "rejection_reason_required": "却下理由が必要です",
+    "cannot_delete_others_dish": "他のユーザーが提出した料理は削除できません"
+  },
+  "success": {
+    "dish_deleted_successfully": "料理が正常に削除されました"
   }
 }

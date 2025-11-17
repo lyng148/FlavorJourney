@@ -19,6 +19,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { UpdateDishDto } from './dtos/update-dish.dto';
+import { GetAllDishSubmissionsQueryDto } from './dtos/get-all-dish-submissions-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -31,7 +32,7 @@ export class DishController {
   constructor(
     private readonly dishService: DishService,
     private readonly uploadService: UploadService,
-  ) {}
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -79,9 +80,11 @@ export class DishController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  @Get()
-  async getAllDishSubmissions() {
-    return this.dishService.getAllDishSubmissions();
+  @Get('admin/dish-submissions')
+  async getAllDishSubmissions(
+    @Query() query: GetAllDishSubmissionsQueryDto,
+  ): Promise<PaginatedDishesResponse> {
+    return this.dishService.getAllDishSubmissions(query);
   }
 
   @UseGuards(JwtAuthGuard)
