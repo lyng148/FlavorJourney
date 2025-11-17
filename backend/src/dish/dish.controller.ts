@@ -102,9 +102,9 @@ export class DishController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':dishId')
-  async getDishByUser(
-    @Param('dishId', ParseIntPipe) id: number,
-  ): Promise<DishResponseDto> {
-    return this.dishService.getById(id);
+  async getDishById(@Param('dishId', ParseIntPipe) id: number, @Req() req) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    return this.dishService.getById(id, userId, userRole);
   }
 }

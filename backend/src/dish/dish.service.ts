@@ -539,57 +539,29 @@ export class DishService {
     };
   }
 
-  async getById(dishId: number): Promise<DishResponseDto> {
-    const dish = await this.prisma.dishes.findFirst({
-      where: { id: dishId, status: 'approved' },
+  async getById(dishId: number, userId: number, userRole: string) {
+    const dish = await this.prisma.dishes.findUnique({
+      where: { id: dishId },
       include: {
         category: true,
         region: true,
-        users_dishes_submitted_byTousers: {
-          select: { username: true },
-        },
+        users_dishes_submitted_byTousers: true,
+        users_dishes_reviewed_byTousers: true,
       },
     });
 
     if (!dish) {
-      throw new NotFoundException(`指定された料理は見つかりませんでした`);
+      throw new NotFoundException('指定された料理は見つかりませんでした');
     }
 
-    return {
-      id: dish.id,
-      name_japanese: dish.name_japanese,
-      name_vietnamese: dish.name_vietnamese,
-      name_romaji: dish.name_romaji ?? undefined,
-      description_japanese: dish.description_japanese ?? undefined,
-      description_vietnamese: dish.description_vietnamese ?? undefined,
-      description_romaji: dish.description_romaji ?? undefined,
-      image_url: dish.image_url ?? undefined,
-      submitted_id: {
-        username: dish.users_dishes_submitted_byTousers.username,
-      },
-      category: dish.category
-        ? {
-            id: dish.category.id,
-            name_japanese: dish.category.name_japanese,
-            name_vietnamese: dish.category.name_vietnamese,
-          }
-        : undefined,
-      region: dish.region
-        ? {
-            id: dish.region.id,
-            name_japanese: dish.region.name_japanese,
-            name_vietnamese: dish.region.name_vietnamese,
-          }
-        : undefined,
-      spiciness_level: dish.spiciness_level ?? undefined,
-      saltiness_level: dish.saltiness_level ?? undefined,
-      sweetness_level: dish.sweetness_level ?? undefined,
-      sourness_level: dish.sourness_level ?? undefined,
-      ingredients: dish.ingredients ?? '',
-      how_to_eat: dish.how_to_eat ?? '',
-      view_count: dish.view_count ?? 0,
-      submitted_at: dish.submitted_at ?? undefined,
-      reviewed_at: dish.reviewed_at ?? undefined,
-    };
+    const isOwner = dish.submitted_by === userId;
+    const isAdmin = userRole === 'admin';
+    const isApproved = dish.status === 'approved';
+
+    if (!isOwner && !isAdmin && !isApproved) {
+      throw new ForbiddenException('この料理を見る権限がありません');
+    }
+
+    return dish;
   }
 }
