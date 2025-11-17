@@ -1,0 +1,65 @@
+/* FlavorJourney Sidebar */
+.fj-sidebar {
+  width: 240px;
+  background: #fff8f3; /* soft warm tone similar to sample */
+  border-right: 1px solid #f0e6e0;
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100vh;
+}
+.fj-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  font-weight: 700;
+  color: #333;
+}
+.fj-brand .badge {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffd2b8;
+}
+.fj-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+.fj-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  color: #4b4b4b;
+  cursor: pointer;
+  user-select: none;
+}
+.fj-item:hover {
+  background: #ffeade;
+}
+.fj-item.active {
+  background: #ffe0cf; /* highlight */
+  color: #e07a3f;
+  font-weight: 600;
+}
+.fj-item .icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.fj-spacer {
+  flex: 1;
+}
+.fj-footer {
+  border-top: 1px solid #f0e6e0;
+  padding-top: 12px;
+}

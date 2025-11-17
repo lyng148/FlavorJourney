@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import viCommon from "./locales/vi/common.json";
-import jpCommon from "./locales/jp/common.json";
+import viHomepage from "./locales/vi/homepage.json";
+import jpHomepage from "./locales/jp/homepage.json";
 
 const stored =
   typeof window !== "undefined" ? localStorage.getItem("lang") : null;
@@ -11,11 +11,11 @@ i18n.use(initReactI18next).init({
   lng: initialLng,
   fallbackLng: "vi",
   debug: false,
-  defaultNS: "common",
-  ns: ["common"],
+  defaultNS: "homepage",
+  ns: ["homepage"],
   resources: {
-    vi: { common: viCommon },
-    jp: { common: jpCommon },
+    vi: { homepage: viHomepage },
+    jp: { homepage: jpHomepage },
   },
   interpolation: {
     escapeValue: false,

@@ -6,17 +6,23 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
+import { ForgotPasswordDto } from './dtos/forgot-password.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { UserRole } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
+import { MailerService } from '@nestjs-modules/mailer';
+
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private mailerService: MailerService,
     private readonly i18n: I18nService,
   ) {}
 
@@ -185,5 +191,97 @@ export class AuthService {
       );
     }
     return { message: await this.i18n.t('auth.errors.logged_out') };
+  }
+  
+async forgotPassword(forgotPasswordDto: ForgotPasswordDto, lang: string) {
+    const { email } = forgotPasswordDto;
+    const user = await this.prisma.users.findUnique({ where: { email } });
+    
+    if (!user) {
+      const successMessage = await this.i18n.translate('auth.email.reset_sent', { lang });
+      return { message: successMessage }; 
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 60); 
+
+    try {
+        await this.prisma.users.update({
+            where: { id: user.id },
+            data: {
+                reset_password_token: token,
+                reset_password_expires_at: expires,
+                token_version: { increment: 1 }
+            },
+        });
+    } catch (dbError) {
+        console.error('Lỗi DB khi cập nhật reset token:', dbError);
+        throw new BadRequestException(await this.i18n.translate('auth.email.send_error', { lang }));
+    }
+
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200'; 
+    const resetUrl = `${clientUrl}/reset-password?token=${token}`;
+
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: await this.i18n.translate('email.PASSWORD_RESET_SUBJECT', { lang }), 
+        template: lang === 'jp' ? 'forgot-password-jp' : 'forgot-password-vi',
+        context: {
+          username: user.username,
+          resetUrl: resetUrl, 
+          expiresMinutes: 60,
+          lang: lang
+        },
+      });
+      
+      const successMessage = await this.i18n.translate('auth.email.reset_sent', { lang });
+      return { message: successMessage };
+    } catch (mailError) {
+        console.error('Lỗi khi gửi mail:', mailError);
+        throw new BadRequestException(
+            await this.i18n.translate('auth.email.send_error', { lang })
+        );
+    }
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto, lang: string) {
+    const { token, password, confirmPassword } = resetPasswordDto;
+
+    if (password !== confirmPassword) {
+      throw new BadRequestException(
+        await this.i18n.translate('auth.errors.password_mismatch', { lang }),
+      );
+    }
+
+    const user = await this.prisma.users.findFirst({
+      where: {
+        reset_password_token: token,
+        reset_password_expires_at: { gt: new Date() },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException(
+        await this.i18n.translate('auth.errors.invalid_or_expired_token', { lang }),
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await this.prisma.users.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        reset_password_token: null,
+        reset_password_expires_at: null,
+        token_version: { increment: 1 },
+      },
+    });
+
+    return {
+      message: await this.i18n.translate('auth.reset_password.success', { lang }),
+    };
   }
 }

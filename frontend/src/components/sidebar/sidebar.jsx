@@ -1,0 +1,149 @@
+import React from "react";
+import "./sidebar.css";
+
+export default function Sidebar({ active = "home", onNavigate, onLogout }) {
+  const Item = ({ id, icon, label }) => (
+    <div
+      className={`fj-item ${active === id ? "active" : ""}`}
+      onClick={() => onNavigate && onNavigate(id)}
+      role="button"
+      aria-label={label}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onNavigate && onNavigate(id);
+        }
+      }}
+    >
+      <span className="icon" aria-hidden>
+        {icon}
+      </span>
+      <span>{label}</span>
+    </div>
+  );
+
+  return (
+    <aside className="fj-sidebar">
+      <div className="fj-brand">
+        <span className="badge" aria-hidden>
+          📍
+        </span>
+        <span>味の旅</span>
+      </div>
+
+      <nav className="fj-nav" aria-label="Sidebar Navigation">
+        <Item
+          id="home"
+          label="ホーム"
+          icon={
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path
+                d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-10.5Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
+            </svg>
+          }
+        />
+        <Item
+          id="search"
+          label="検索"
+          icon={
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M20 20l-3.5-3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
+            </svg>
+          }
+        />
+        <Item
+          id="register"
+          label="登録"
+          icon={
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          }
+        />
+        <Item
+          id="favorites"
+          label="お気に入り"
+          icon={
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M12.1 21.35 10 19.28C5.4 14.36 2 11.28 2 7.5 2 5 4 3 6.5 3 8.04 3 9.54 3.81 10.35 5.08 11.16 3.81 12.66 3 14.2 3 16.7 3 18.7 5 18.7 7.5c0 3.78-3.4 6.86-7.99 11.78l-1.61 2.07z" />
+            </svg>
+          }
+        />
+        <Item
+          id="profile"
+          label="プロフィール"
+          icon={
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <circle
+                cx="12"
+                cy="8"
+                r="4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M4 20c1.5-3.5 5-5 8-5s6.5 1.5 8 5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          }
+        />
+      </nav>
+
+      <div className="fj-spacer" />
+
+      <div className="fj-footer">
+        <div
+          className="fj-item"
+          onClick={() => onLogout && onLogout()}
+          role="button"
+          tabIndex={0}
+          aria-label="ログアウト"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") onLogout && onLogout();
+          }}
+        >
+          <span className="icon" aria-hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path
+                d="M10 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-2"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M14 12H3m0 0 3-3m-3 3 3 3"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          <span>ログアウト</span>
+        </div>
+      </div>
+    </aside>
+  );
+}

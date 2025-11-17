@@ -15,6 +15,8 @@ import {
   AcceptLanguageResolver,
 } from 'nestjs-i18n';
 import { join } from 'path';
+import { UploadModule } from './upload/upload.module';
+import { MailerModule } from 'src/mailer/mailer.module';
 import * as fs from 'fs';
 
 @Module({
@@ -22,28 +24,32 @@ import * as fs from 'fs';
     I18nModule.forRoot({
       fallbackLanguage: 'vi',
       loaderOptions: {
-        path: join(__dirname, 'locales'),
+        path: fs.existsSync(join(__dirname, 'locales'))
+          ? join(__dirname, 'locales')
+          : join(process.cwd(), 'src', 'locales'),
+        watch: true,
       },
       resolvers: [
         { use: QueryResolver, options: ['lang'] },
         new HeaderResolver(['x-lang']),
         AcceptLanguageResolver,
       ],
-import { UploadModule } from './upload/upload.module';
+    }),
 
-@Module({
-  imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    
+    MailerModule,
     ProfileModule,
     PrismaModule,
     CommonModule,
     AuthModule,
     DishModule,
     UploadModule,
-    ViewHistoryModule
+    ViewHistoryModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })

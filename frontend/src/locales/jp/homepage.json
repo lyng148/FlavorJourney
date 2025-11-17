@@ -1,0 +1,8 @@
+{
+  "language": "言語",
+  "welcome": "ようこそ、{{name}}",
+  "loggedIn": "ログイン済みです。ここにダッシュボードの内容を追加できます。",
+  "backToLogin": "戻る（ログイン画面）",
+  "lang_vi": "Tiếng Việt",
+  "lang_jp": "日本語"
+}

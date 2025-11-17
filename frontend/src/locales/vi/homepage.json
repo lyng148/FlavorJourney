@@ -1,0 +1,8 @@
+{
+  "language": "Ngôn ngữ",
+  "welcome": "Chào mừng, {{name}}",
+  "loggedIn": "Bạn đã đăng nhập. Bạn có thể thêm nội dung bảng điều khiển tại đây.",
+  "backToLogin": "Quay về (màn hình đăng nhập)",
+  "lang_vi": "Tiếng Việt",
+  "lang_jp": "日本語"
+}
