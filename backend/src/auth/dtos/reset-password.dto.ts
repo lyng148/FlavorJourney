@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MinLength, Matches } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
-const passwordRegex = /(?=.*[A-Z])|(?=.*[a-z])|(?=.*\d)|(?=.*[^A-Za-z0-9])/g;
+const passwordRegex = /^(?:(?=.*[a-z])(?=.*[A-Z])|(?=.*[a-z])(?=.*\d)|(?=.*[a-z])(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)|(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
 
 export class ResetPasswordDto {
   @IsNotEmpty({ message: i18nValidationMessage('auth.reset.token_required') })
