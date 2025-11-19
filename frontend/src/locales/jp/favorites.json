@@ -1,0 +1,11 @@
+{
+  "title": "お気に入り",
+  "subtitle": "気に入った料理を保存して、すぐに見返せます",
+  "empty": "お気に入りはまだありません。",
+  "viewDetails": "詳細を見る",
+  "stats": {
+    "savedCount": "保存した件数",
+    "spicyCount": "辛い料理",
+    "popularRegion": "人気の地域"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Yêu thích",
+  "subtitle": "Lưu lại món bạn thích để dễ dàng xem lại sau",
+  "empty": "Chưa có món nào trong danh sách yêu thích.",
+  "viewDetails": "Xem chi tiết",
+  "stats": {
+    "savedCount": "Đã lưu",
+    "spicyCount": "Món cay",
+    "popularRegion": "Khu vực phổ biến"
+  }
+}

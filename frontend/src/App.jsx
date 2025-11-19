@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import "./App.css";
 import { useTranslation } from "react-i18next";
 import Sidebar from "./components/sidebar/sidebar";
+import Favorites from "./pages/Favorites/Favorites";
 
 function Home({ onReturnToLogin }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -40,12 +41,7 @@ function Home({ onReturnToLogin }) {
           </>
         );
       case "favorites":
-        return (
-          <>
-            <h1>お気に入り</h1>
-            <p>あなたのお気に入りを表示します。（デモ）</p>
-          </>
-        );
+        return <Favorites />;
       case "profile":
         return (
           <>
