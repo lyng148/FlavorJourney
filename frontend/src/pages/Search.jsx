@@ -5,6 +5,16 @@ import DishList from '../components/search/DishList';
 import Pagination from '../components/search/Pagination';
 import '../components/search/Search.css';
 
+const INITIAL_FILTERS = {
+  search: '',
+  category: [],
+  region: [],
+  taste: [],
+  sort: 'latest',
+  page: 1,
+  limit: 20,
+};
+
 const Search = () => {
   const { t } = useTranslation('search');
   const [dishes, setDishes] = useState([]);
@@ -12,17 +22,10 @@ const Search = () => {
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasSearched, setHasSearched] = useState(false);
 
   // State cho filters
-  const [filters, setFilters] = useState({
-    search: '',
-    category: [],
-    region: [],
-    taste: [],
-    sort: 'latest',
-    page: 1,
-    limit: 20,
-  });
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
 
   // Fetch dishes từ API
   const fetchDishes = async (filterParams) => {
@@ -83,10 +86,12 @@ const Search = () => {
 
   // Gọi API khi filters thay đổi
   useEffect(() => {
+    if (!hasSearched) return;
     fetchDishes(filters);
-  }, [filters]);
+  }, [filters, hasSearched]);
 
   const handleFilterChange = (newFilters) => {
+    setHasSearched(true);
     setFilters({
       ...newFilters,
       page: 1, // Reset về trang 1 khi thay đổi filter
@@ -94,6 +99,7 @@ const Search = () => {
   };
 
   const handlePageChange = (page) => {
+    if (!hasSearched) return;
     setFilters({
       ...filters,
       page,
@@ -102,15 +108,12 @@ const Search = () => {
   };
 
   const handleReset = () => {
-    setFilters({
-      search: '',
-      category: [],
-      region: [],
-      taste: [],
-      sort: 'latest',
-      page: 1,
-      limit: 20,
-    });
+    setHasSearched(false);
+    setFilters(INITIAL_FILTERS);
+    setDishes([]);
+    setError(null);
+    setTotalPages(1);
+    setCurrentPage(1);
   };
 
   return (
@@ -138,7 +141,11 @@ const Search = () => {
             </div>
           )}
 
-          {loading ? (
+          {!hasSearched ? (
+            <div className="no-results">
+              <p>{t('start_search_prompt', { defaultValue: 'Nhập từ khóa hoặc chọn bộ lọc để bắt đầu tìm kiếm.' })}</p>
+            </div>
+          ) : loading ? (
             <div className="loading">
               <p>{t('loading')}</p>
             </div>

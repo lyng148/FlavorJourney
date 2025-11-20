@@ -9,6 +9,10 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
   const [regions, setRegions] = useState([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
+
   // Fetch categories và regions từ API
   useEffect(() => {
     const fetchOptions = async () => {
