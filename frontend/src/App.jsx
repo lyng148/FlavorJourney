@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import RegisterDish from "./pages/RegisterDish/RegisterDish";
 import "./App.css";
 import { useTranslation } from "react-i18next";
 import Sidebar from "./components/sidebar/sidebar";
@@ -33,12 +34,7 @@ function Home({ onReturnToLogin }) {
           </>
         );
       case "register":
-        return (
-          <>
-            <h1>登録</h1>
-            <p>新しい投稿やレストランを登録します。（デモ）</p>
-          </>
-        );
+        return <RegisterDish />;
       case "favorites":
         return (
           <>
