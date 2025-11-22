@@ -23,11 +23,7 @@ export class DishService {
     private readonly i18n: I18nService,
   ) {}
 
-  async createDish(
-    createDishDto: CreateDishDto,
-    userId: number,
-    imageUrl?: string,
-  ) {
+  async createDish(createDishDto: CreateDishDto, userId: number) {
     const { category_id, region_id } = createDishDto;
 
     if (category_id) {
@@ -62,7 +58,6 @@ export class DishService {
         submitted_by: userId,
         status: 'pending',
         submitted_at: new Date(),
-        image_url: imageUrl || null, // thêm trường image_url
       },
       select: {
         id: true,

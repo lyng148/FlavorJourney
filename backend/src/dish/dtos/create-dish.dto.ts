@@ -75,4 +75,8 @@ export class CreateDishDto {
   @IsOptional()
   @IsString()
   how_to_eat?: string;
+
+  @IsOptional()
+  @IsUrl()
+  image_url?: string;
 }

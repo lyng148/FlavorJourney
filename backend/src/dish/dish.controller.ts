@@ -32,24 +32,13 @@ export class DishController {
   constructor(
     private readonly dishService: DishService,
     private readonly uploadService: UploadService,
-  ) { }
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
-  async addDish(
-    @Body() createDishDto: CreateDishDto,
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req,
-  ) {
+  async addDish(@Body() createDishDto: CreateDishDto, @Req() req) {
     const userId = req.user.id;
-
-    let imageUrl: string | undefined;
-    if (file) {
-      imageUrl = await this.uploadService.uploadDishImage(file);
-    }
-
-    return this.dishService.createDish(createDishDto, userId, imageUrl);
+    return this.dishService.createDish(createDishDto, userId);
   }
 
   @UseGuards(JwtAuthGuard)
