@@ -14,6 +14,7 @@ import DishApproval from "./pages/DishApproval";
 import DishDetail from "./pages/DishDetail";
 import RegisterDish from "./pages/RegisterDish/RegisterDish";
 import Search from "./pages/Search";
+import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import "./App.css";
 import Sidebar from "./components/sidebar/sidebar";
 import Favorites from "./pages/Favorites/Favorites";
@@ -229,6 +230,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route 
+          path="/change-password" 
+          element={
+            <DetailLayout>
+              <ChangePassword />
+            </DetailLayout>
+          } 
+        />
 
         {/* ===== SHARED HOME ROUTE (USER + ADMIN) ===== */}
         <Route path="/" element={<HomeRouter />} />
