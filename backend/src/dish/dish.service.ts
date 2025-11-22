@@ -21,7 +21,7 @@ export class DishService {
   constructor(
     private prisma: PrismaService,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
 
   async createDish(
     createDishDto: CreateDishDto,
@@ -88,16 +88,16 @@ export class DishService {
     const tasteFilters: Prisma.dishesWhereInput[] = [];
 
     if (query.taste?.includes('spicy')) {
-      tasteFilters.push({ spiciness_level: { gte: 5 } });
+      tasteFilters.push({ spiciness_level: { gte: 3 } });
     }
     if (query.taste?.includes('salty')) {
-      tasteFilters.push({ saltiness_level: { gte: 5 } });
+      tasteFilters.push({ saltiness_level: { gte: 3 } });
     }
     if (query.taste?.includes('sweet')) {
-      tasteFilters.push({ sweetness_level: { gte: 5 } });
+      tasteFilters.push({ sweetness_level: { gte: 3 } });
     }
     if (query.taste?.includes('sour')) {
-      tasteFilters.push({ sourness_level: { gte: 5 } });
+      tasteFilters.push({ sourness_level: { gte: 3 } });
     }
 
     const tasteWhere =
@@ -107,19 +107,19 @@ export class DishService {
     const [regionIds, categoryIds] = await Promise.all([
       query.region?.length
         ? this.prisma.regions
-          .findMany({
-            where: { code: { in: query.region } },
-            select: { id: true },
-          })
-          .then((r) => r.map((item) => item.id))
+            .findMany({
+              where: { code: { in: query.region } },
+              select: { id: true },
+            })
+            .then((r) => r.map((item) => item.id))
         : Promise.resolve(undefined),
       query.category?.length
         ? this.prisma.categories
-          .findMany({
-            where: { slug: { in: query.category } },
-            select: { id: true },
-          })
-          .then((c) => c.map((item) => item.id))
+            .findMany({
+              where: { slug: { in: query.category } },
+              select: { id: true },
+            })
+            .then((c) => c.map((item) => item.id))
         : Promise.resolve(undefined),
     ]);
 
@@ -165,9 +165,9 @@ export class DishService {
         status: 'approved',
         OR: query.search
           ? [
-            { name_japanese: { contains: query.search } },
-            { name_vietnamese: { contains: query.search } },
-          ]
+              { name_japanese: { contains: query.search } },
+              { name_vietnamese: { contains: query.search } },
+            ]
           : undefined,
         category_id: categoryIds ? { in: categoryIds } : undefined,
         region_id: regionIds ? { in: regionIds } : undefined,
@@ -193,18 +193,18 @@ export class DishService {
 
       category: d.category
         ? {
-          id: d.category.id,
-          name_japanese: d.category.name_japanese,
-          name_vietnamese: d.category.name_vietnamese,
-        }
+            id: d.category.id,
+            name_japanese: d.category.name_japanese,
+            name_vietnamese: d.category.name_vietnamese,
+          }
         : undefined,
 
       region: d.region
         ? {
-          id: d.region.id,
-          name_japanese: d.region.name_japanese,
-          name_vietnamese: d.region.name_vietnamese,
-        }
+            id: d.region.id,
+            name_japanese: d.region.name_japanese,
+            name_vietnamese: d.region.name_vietnamese,
+          }
         : undefined,
 
       spiciness_level: d.spiciness_level ?? undefined,
@@ -316,9 +316,10 @@ export class DishService {
         const category = await this.prisma.categories.findUnique({
           where: { id: category_id },
         });
-        if (!category) throw new BadRequestException(
-          await this.i18n.t('dish.errors.invalid_category'),
-        );
+        if (!category)
+          throw new BadRequestException(
+            await this.i18n.t('dish.errors.invalid_category'),
+          );
         updateData.category_id = category_id;
       }
 
@@ -327,9 +328,10 @@ export class DishService {
         const region = await this.prisma.regions.findUnique({
           where: { id: region_id },
         });
-        if (!region) throw new BadRequestException(
-          await this.i18n.t('dish.errors.invalid_region'),
-        );
+        if (!region)
+          throw new BadRequestException(
+            await this.i18n.t('dish.errors.invalid_region'),
+          );
         updateData.region_id = region_id;
       }
 
@@ -374,9 +376,10 @@ export class DishService {
       const category = await this.prisma.categories.findUnique({
         where: { id: category_id },
       });
-      if (!category) throw new BadRequestException(
-        await this.i18n.t('dish.errors.invalid_category'),
-      );
+      if (!category)
+        throw new BadRequestException(
+          await this.i18n.t('dish.errors.invalid_category'),
+        );
     }
 
     // Validate region if provided
@@ -384,9 +387,10 @@ export class DishService {
       const region = await this.prisma.regions.findUnique({
         where: { id: region_id },
       });
-      if (!region) throw new BadRequestException(
-        await this.i18n.t('dish.errors.invalid_region'),
-      );
+      if (!region)
+        throw new BadRequestException(
+          await this.i18n.t('dish.errors.invalid_region'),
+        );
     }
 
     const updateData: any = { ...otherFields };
@@ -423,7 +427,9 @@ export class DishService {
     return updatedDish;
   }
 
-  async getAllDishSubmissions(query: GetAllDishSubmissionsQueryDto): Promise<PaginatedDishesResponse> {
+  async getAllDishSubmissions(
+    query: GetAllDishSubmissionsQueryDto,
+  ): Promise<PaginatedDishesResponse> {
     const page = query.page ? Number(query.page) : 1;
     const limit = query.limit ? Number(query.limit) : 20;
     const skip = (page - 1) * limit;
@@ -468,17 +474,17 @@ export class DishService {
       },
       category: (d as any).category
         ? {
-          id: (d as any).category.id,
-          name_japanese: (d as any).category.name_japanese,
-          name_vietnamese: (d as any).category.name_vietnamese,
-        }
+            id: (d as any).category.id,
+            name_japanese: (d as any).category.name_japanese,
+            name_vietnamese: (d as any).category.name_vietnamese,
+          }
         : undefined,
       region: (d as any).region
         ? {
-          id: (d as any).region.id,
-          name_japanese: (d as any).region.name_japanese,
-          name_vietnamese: (d as any).region.name_vietnamese,
-        }
+            id: (d as any).region.id,
+            name_japanese: (d as any).region.name_japanese,
+            name_vietnamese: (d as any).region.name_vietnamese,
+          }
         : undefined,
       spiciness_level: d.spiciness_level ?? undefined,
       saltiness_level: d.saltiness_level ?? undefined,
