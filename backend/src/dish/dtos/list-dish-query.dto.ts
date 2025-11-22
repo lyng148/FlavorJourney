@@ -1,35 +1,50 @@
-import { IsOptional, IsString, IsNumberString, IsArray } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsOptional, IsInt, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class ListDishesQueryDto {
   @IsOptional()
-  @IsString()
+  @IsInt()
+  @Type(() => Number)
+  @Min(0)
+  @Max(5)
+  spiciness_level?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  @Min(0)
+  @Max(5)
+  saltiness_level?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  @Min(0)
+  @Max(5)
+  sweetness_level?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  @Min(0)
+  @Max(5)
+  sourness_level?: number;
+
+  // giữ các trường hiện tại
+  @IsOptional()
   search?: string;
-
   @IsOptional()
-  @IsArray()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   category?: string[];
-
   @IsOptional()
-  @IsArray()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   region?: string[];
-
   @IsOptional()
-  @IsArray()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
-  taste?: ('spicy' | 'salty' | 'sweet' | 'sour')[];
-
-  @IsOptional()
-  @IsString()
   sort?: 'latest' | 'popular';
-
   @IsOptional()
-  @IsNumberString()
-  page?: string;
-
+  @IsInt()
+  @Type(() => Number)
+  page?: number;
   @IsOptional()
-  @IsNumberString()
-  limit?: string;
+  @IsInt()
+  @Type(() => Number)
+  limit?: number;
 }

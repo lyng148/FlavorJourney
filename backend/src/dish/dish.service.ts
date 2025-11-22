@@ -85,23 +85,20 @@ export class DishService {
     const sortType = query.sort ?? 'latest';
 
     // ==== Taste filters ====
-    const tasteFilters: Prisma.dishesWhereInput[] = [];
-
-    if (query.taste?.includes('spicy')) {
-      tasteFilters.push({ spiciness_level: { gte: 3 } });
-    }
-    if (query.taste?.includes('salty')) {
-      tasteFilters.push({ saltiness_level: { gte: 3 } });
-    }
-    if (query.taste?.includes('sweet')) {
-      tasteFilters.push({ sweetness_level: { gte: 3 } });
-    }
-    if (query.taste?.includes('sour')) {
-      tasteFilters.push({ sourness_level: { gte: 3 } });
-    }
-
-    const tasteWhere =
-      tasteFilters.length > 0 ? { AND: tasteFilters } : undefined;
+    const tasteWhere: Prisma.dishesWhereInput = {
+      ...(query.spiciness_level !== undefined && {
+        spiciness_level: query.spiciness_level,
+      }),
+      ...(query.saltiness_level !== undefined && {
+        saltiness_level: query.saltiness_level,
+      }),
+      ...(query.sweetness_level !== undefined && {
+        sweetness_level: query.sweetness_level,
+      }),
+      ...(query.sourness_level !== undefined && {
+        sourness_level: query.sourness_level,
+      }),
+    };
 
     // ==== Map region names (code) and category names (slug) to IDs ====
     const [regionIds, categoryIds] = await Promise.all([
