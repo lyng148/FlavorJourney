@@ -1,9 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import "./sidebar.css";
+import { PiBowlFood } from "react-icons/pi";
 
 export default function Sidebar({ active = "home", onNavigate, onLogout }) {
-  const { t } = useTranslation("sidebar");
+  const { t, i18n } = useTranslation("sidebar");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isAdmin = user.role === "admin";
 
@@ -35,7 +36,7 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
     <aside className="fj-sidebar">
       <div className="fj-brand">
         <span className="badge" aria-hidden>
-          📍
+          <PiBowlFood />
         </span>
         <span>{t("brand")}</span>
       </div>
@@ -148,6 +149,29 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
           </>
         )}
       </nav>
+
+      <div className="fj-lang-switch">
+        <button
+          className={`lang-btn ${i18n.language === "vi" ? "active" : ""}`}
+          onClick={() => {
+            i18n.changeLanguage("vi");
+            localStorage.setItem("lang", "vi");
+          }}
+          title={t("lang_vi")}
+        >
+          <img src="/vietnam_flag.svg" alt="VN" />
+        </button>
+        <button
+          className={`lang-btn ${i18n.language === "jp" ? "active" : ""}`}
+          onClick={() => {
+            i18n.changeLanguage("jp");
+            localStorage.setItem("lang", "jp");
+          }}
+          title={t("lang_jp")}
+        >
+          <img src="/japan_flag.png" alt="JP" />
+        </button>
+      </div>
 
       <div className="fj-spacer" />
 

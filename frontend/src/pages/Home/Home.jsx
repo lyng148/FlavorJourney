@@ -7,9 +7,10 @@ function Home() {
   const { t, i18n } = useTranslation("homepage");
   const { t: tf } = useTranslation("favorites");
   const navigate = useNavigate();
-  const [lang, setLang] = useState(
-    localStorage.getItem("lang") || i18n.language || "vi"
-  );
+
+  // Use i18n.language directly instead of local state
+  const lang = i18n.language;
+
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,8 +40,7 @@ function Home() {
         setDishes(data.data);
 
         // Load current favorites to render heart state
-        const langHeader =
-          localStorage.getItem("lang") || i18n.language || "vi";
+        const langHeader = i18n.language || "vi";
         const favRes = await fetch(`${API_BASE}/favorites`, {
           headers: { Authorization: `Bearer ${token}`, "x-lang": langHeader },
         });
@@ -61,18 +61,11 @@ function Home() {
     };
 
     fetchDishes();
-  }, [API_BASE, navigate]);
-
-  const handleChangeLang = (e) => {
-    const value = e.target.value;
-    setLang(value);
-    localStorage.setItem("lang", value);
-    i18n.changeLanguage(value);
-  };
+  }, [API_BASE, navigate, i18n.language]); // Add i18n.language dependency to refetch/re-render if needed
 
   const handleToggleFavorite = async (dishId) => {
     const token = localStorage.getItem("access_token") || "";
-    const langHeader = localStorage.getItem("lang") || i18n.language || "vi";
+    const langHeader = i18n.language || "vi";
     try {
       if (favoriteIds.has(dishId)) {
         const res = await fetch(`${API_BASE}/favorites/${dishId}`, {
@@ -108,22 +101,7 @@ function Home() {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <label htmlFor="lang-select" style={{ fontWeight: 600 }}>
-          {t("language")}:
-        </label>
-        <select id="lang-select" value={lang} onChange={handleChangeLang}>
-          <option value="vi">{t("lang_vi")}</option>
-          <option value="jp">{t("lang_jp")}</option>
-        </select>
-      </div>
+      {/* Language switcher removed from here */}
       <div style={{ marginTop: 24 }}>
         <h2>{t("dishList")}</h2>
         {loading && <p>{t("loading")}</p>}

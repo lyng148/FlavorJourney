@@ -17,6 +17,7 @@ import Search from "./pages/Search";
 import "./App.css";
 import Sidebar from "./components/sidebar/sidebar";
 import Favorites from "./pages/Favorites/Favorites";
+import Profile from "./pages/Profile/Profile";
 
 // ============= SHARED COMPONENTS =============
 
@@ -59,12 +60,7 @@ function UserHome() {
       case "favorites":
         return <Favorites />;
       case "profile":
-        return (
-          <>
-            <h1>プロフィール</h1>
-            <p>プロフィール情報を編集します。（デモ）</p>
-          </>
-        );
+        return <Profile />;
       case "home":
       default:
         return <Home />;
