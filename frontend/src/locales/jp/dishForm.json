@@ -1,0 +1,26 @@
+{
+  "title": "新しい料理を登録",
+  "subtitle": "あなたのお気に入りのベトナム料理をみんなと共有しましょう。",
+  "upload_label": "料理の写真",
+  "upload_hint": "クリックしてアップロード",
+  "upload_support": "JPG, PNG, GIF (最大5MB)",
+  "name_jp_label": "料理名（日本語）",
+  "name_vi_label": "料理名（ベトナム語）",
+  "description_label": "説明",
+  "description_placeholder": "味わい、食感、ストーリーなど詳しく記入してください。",
+  "region_label": "地域",
+  "region_placeholder": "地域を選択",
+  "category_label": "カテゴリー",
+  "category_placeholder": "カテゴリーを選択",
+  "ingredients_label": "材料",
+  "ingredients_placeholder": "主な材料を1行ずつ入力してください。",
+  "spice_label": "辛さレベル",
+  "submit": "料理を投稿する",
+  "reset": "クリア",
+  "submitting": "送信中...",
+  "loading": "読み込み中...",
+  "submit_success": "料理の投稿に成功しました！",
+  "submit_error": "料理の投稿に失敗しました",
+  "upload_error_size": "ファイルサイズが大きすぎます（最大5MB）"
+}
+

@@ -26,7 +26,12 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
 
   useEffect(() => {
     setLocalFilters(filters);
-    setSpiceLevel(filters.taste.includes('spicy') ? 3 : 0);
+    // Khi filters thay đổi từ bên ngoài (ví dụ reset), cập nhật spiceLevel
+    const hasSpicy = filters.taste.includes('spicy');
+    if (!hasSpicy) {
+      setSpiceLevel(0);
+    }
+    // Nếu có spicy, giữ nguyên spiceLevel hiện tại (không reset về 3)
   }, [filters]);
 
   // Fetch categories và regions từ API
@@ -77,7 +82,15 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
   };
 
   const handleSearchSubmit = () => {
-    onFilterChange(localFilters);
+    // Khi submit, cập nhật taste filter dựa trên spiceLevel
+    // Backend hiện tại chỉ check >= 3, nên chỉ gửi 'spicy' khi level >= 3
+    const withoutSpicy = localFilters.taste.filter((taste) => taste !== 'spicy');
+    const updatedFilters = {
+      ...localFilters,
+      taste: spiceLevel >= 3 ? [...withoutSpicy, 'spicy'] : withoutSpicy,
+      page: 1,
+    };
+    onFilterChange(updatedFilters);
   };
 
   const handleSearchKeyPress = (e) => {
@@ -93,8 +106,8 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
       category: categoryId === 'all' ? [] : [categoryId],
       page: 1,
     };
+    // Chỉ update local state, không gọi API ngay
     setLocalFilters(updatedFilters);
-    onFilterChange(updatedFilters);
   };
 
   const handleRegionSelect = (e) => {
@@ -104,21 +117,15 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
       region: regionId === 'all' ? [] : [regionId],
       page: 1,
     };
+    // Chỉ update local state, không gọi API ngay
     setLocalFilters(updatedFilters);
-    onFilterChange(updatedFilters);
   };
 
   const handleSpiceChange = (e) => {
     const level = Number(e.target.value);
     setSpiceLevel(level);
-    const withoutSpicy = localFilters.taste.filter((taste) => taste !== 'spicy');
-    const updatedFilters = {
-      ...localFilters,
-      taste: level > 0 ? [...withoutSpicy, 'spicy'] : withoutSpicy,
-      page: 1,
-    };
-    setLocalFilters(updatedFilters);
-    onFilterChange(updatedFilters);
+    // Chỉ update local state, không gọi API ngay
+    // Taste filter sẽ được apply khi bấm nút "Áp dụng bộ lọc"
   };
 
   const selectedRegion =
@@ -146,7 +153,7 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
           </button>
         </div>
         <button type="button" className="filter-summary" onClick={handleSearchSubmit}>
-          {t('filter_summary')}
+          {t('Áp dụng bộ lọc')}
         </button>
       </div>
 

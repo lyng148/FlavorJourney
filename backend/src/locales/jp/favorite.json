@@ -1,0 +1,8 @@
+{
+  "ADD_SUCCESS": "このお料理をお気に入りに追加しました。",
+  "REMOVE_SUCCESS": "お気に入りから削除しました。",
+  "ALREADY_FAVORITED": "このお料理は既にお気に入りに追加されています。",
+  "NOT_FOUND": "お気に入りが見つかりません。",
+  "DISH_NOT_APPROVED": "このお料理は承認されていないため、お気に入りに追加できません。",
+  "DISH_ID_INVALID": "無効なお料理IDです。"
+}

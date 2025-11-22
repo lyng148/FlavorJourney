@@ -1,12 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
-export default function Login({ onSwitchToRegister, onLoginSuccess }) {
+export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [saveLogin, setSaveLogin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
   const lang = localStorage.getItem("lang") || "vi";
@@ -33,13 +35,13 @@ export default function Login({ onSwitchToRegister, onLoginSuccess }) {
       if (data.access_token) {
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user", JSON.stringify(data.user || {}));
-        // call onLoginSuccess if provided to let SPA switch view without reload
+
+        // Always navigate to home page after login
+        navigate("/");
+
+        // Call onLoginSuccess for any additional logic
         if (onLoginSuccess && typeof onLoginSuccess === "function") {
           onLoginSuccess();
-        } else {
-          // fallback: redirect to backend-provided path or home
-          const redirect = data.redirectTo || "/";
-          window.location.href = redirect;
         }
       } else {
         setError("Login succeeded but no token returned");
@@ -99,7 +101,7 @@ export default function Login({ onSwitchToRegister, onLoginSuccess }) {
           <button
             type="button"
             className="btn-secondary"
-            onClick={() => onSwitchToRegister && onSwitchToRegister()}
+            onClick={() => navigate("/register")}
           >
             新規登録
           </button>

@@ -5,5 +5,7 @@
   "register": "登録",
   "favorites": "お気に入り",
   "profile": "プロフィール",
-  "logout": "ログアウト"
+  "logout": "ログアウト",
+  "admin": "管理",
+  "dishApproval": "料理承認"
 }

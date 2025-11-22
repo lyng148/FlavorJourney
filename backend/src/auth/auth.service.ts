@@ -112,12 +112,21 @@ export class AuthService {
     const lastLogin = user.last_login;
     let consecutiveLoginDays = user.consecutive_login_days || 0;
 
+    const DAY_MS = 1000 * 60 * 60 * 24;
+    const startOfDay = (d: Date) => {
+      const x = new Date(d);
+      x.setHours(0, 0, 0, 0);
+      return x;
+    };
     if (lastLogin) {
-      const diffTime = Math.abs(now.getTime() - lastLogin.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const last = startOfDay(lastLogin);
+      const today = startOfDay(now);
+      const diffDays = Math.floor((today.getTime() - last.getTime()) / DAY_MS);
 
       if (diffDays === 1) {
         consecutiveLoginDays += 1;
+      } else if (diffDays === 0) {
+        // same day: keep streak unchanged
       } else if (diffDays > 1) {
         consecutiveLoginDays = 1;
       }

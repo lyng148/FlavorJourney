@@ -1,0 +1,16 @@
+{
+  "error": {
+    "user_not_found": "Không tìm thấy người dùng."
+  },
+  "password": {
+    "mismatch": "Mật khẩu và xác nhận mật khẩu không khớp.",
+    "old_invalid": "Mật khẩu hiện tại không đúng.",
+    "change_success": "Mật khẩu đã được thay đổi thành công.",
+    "old_required": "Mật khẩu hiện tại là bắt buộc.",
+    "new_required": "Mật khẩu mới là bắt buộc.",
+    "minchar": "Mật khẩu phải có ít nhất 8 ký tự.",
+    "rule": "Mật khẩu cần chứa ít nhất 2 trong số: chữ hoa, chữ thường, số, ký tự đặc biệt.",
+    "confirm_required": "Xác nhận mật khẩu là bắt buộc.",
+    "same_as_old": "Mật khẩu mới không được giống mật khẩu hiện tại."
+  }
+}

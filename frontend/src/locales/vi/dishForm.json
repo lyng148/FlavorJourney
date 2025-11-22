@@ -1,0 +1,26 @@
+{
+  "title": "Đăng món ăn mới",
+  "subtitle": "Chia sẻ những món Việt bạn yêu thích với cộng đồng.",
+  "upload_label": "Ảnh món ăn",
+  "upload_hint": "Nhấp để tải ảnh lên",
+  "upload_support": "JPG, PNG, GIF (tối đa 5MB)",
+  "name_jp_label": "Tên (tiếng Nhật)",
+  "name_vi_label": "Tên (tiếng Việt)",
+  "description_label": "Mô tả",
+  "description_placeholder": "Hương vị, cách chế biến, câu chuyện...",
+  "region_label": "Vùng miền",
+  "region_placeholder": "Chọn vùng miền",
+  "category_label": "Danh mục",
+  "category_placeholder": "Chọn danh mục",
+  "ingredients_label": "Nguyên liệu",
+  "ingredients_placeholder": "Liệt kê nguyên liệu chính, mỗi dòng một mục...",
+  "spice_label": "Độ cay",
+  "submit": "Gửi món ăn",
+  "reset": "Xóa thông tin",
+  "submitting": "Đang gửi...",
+  "loading": "Đang tải...",
+  "submit_success": "Đã gửi món ăn thành công!",
+  "submit_error": "Gửi món ăn thất bại",
+  "upload_error_size": "File quá lớn (tối đa 5MB)"
+}
+

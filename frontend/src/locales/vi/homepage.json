@@ -4,5 +4,10 @@
   "loggedIn": "Bạn đã đăng nhập. Bạn có thể thêm nội dung bảng điều khiển tại đây.",
   "backToLogin": "Quay về (màn hình đăng nhập)",
   "lang_vi": "Tiếng Việt",
-  "lang_jp": "日本語"
+  "lang_jp": "日本語",
+  "dishList": "Danh sách món ăn",
+  "loading": "Đang tải...",
+  "error": "Lỗi",
+  "viewDetails": "Xem chi tiết",
+  "noImage": "Không có ảnh"
 }

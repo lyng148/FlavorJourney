@@ -7,7 +7,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { DishModule } from './dish/dish.module';
+import { FavoritesModule } from './favorites/favorites.module';
 import { ViewHistoryModule } from './view_history/view_history.module';
+import { UsersModule } from './users/users.module';
 import {
   I18nModule,
   QueryResolver,
@@ -17,6 +19,9 @@ import {
 import { join } from 'path';
 import { UploadModule } from './upload/upload.module';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { TemplateModule } from './template/template.module';
+import { RegionModule } from './region/region.module';
+import { CategoryModule } from './category/category.module';
 import * as fs from 'fs';
 
 @Module({
@@ -39,7 +44,8 @@ import * as fs from 'fs';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    
+    UsersModule,
+    FavoritesModule,
     MailerModule,
     ProfileModule,
     PrismaModule,
@@ -48,6 +54,9 @@ import * as fs from 'fs';
     DishModule,
     UploadModule,
     ViewHistoryModule,
+    TemplateModule,
+    RegionModule,
+    CategoryModule,
   ],
 
   controllers: [AppController],

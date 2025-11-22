@@ -1,0 +1,8 @@
+{
+  "ADD_SUCCESS": "Đã thêm món ăn vào danh sách yêu thích.",
+  "REMOVE_SUCCESS": "Đã xóa khỏi danh sách yêu thích.",
+  "ALREADY_FAVORITED": "Món ăn này đã có trong danh sách yêu thích của bạn.",
+  "NOT_FOUND": "Không tìm thấy món ăn yêu thích.",
+  "DISH_NOT_APPROVED": "Không thể thêm món ăn chưa được phê duyệt vào danh sách yêu thích.",
+  "DISH_ID_INVALID": "ID món ăn không hợp lệ."
+}

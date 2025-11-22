@@ -53,19 +53,19 @@ export class CreateDishDto {
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(10)
+  @Max(5)
   saltiness_level?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(10)
+  @Max(5)
   sweetness_level?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(10)
+  @Max(5)
   sourness_level?: number;
 
   @IsOptional()
