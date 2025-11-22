@@ -13,6 +13,8 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+
   const name =
     user.username || user.email || (lang === "jp" ? "ユーザー" : "Người dùng");
 
@@ -20,12 +22,18 @@ function Home() {
     const fetchDishes = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/dishes`, {
+        const response = await fetch(`${API_BASE}/dishes`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user");
+            navigate("/login");
+            return;
+          }
           throw new Error("Failed to fetch dishes");
         }
         const data = await response.json();
@@ -45,12 +53,6 @@ function Home() {
     setLang(value);
     localStorage.setItem("lang", value);
     i18n.changeLanguage(value);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    navigate("/login");
   };
 
   return (
@@ -93,7 +95,7 @@ function Home() {
                   />
                 ) : (
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
-                    <span>No Image</span>
+                    <span>{t("noImage")}</span>
                   </div>
                 )}
               </div>
@@ -101,15 +103,15 @@ function Home() {
               <p style={{ margin: 0, color: '#666', fontSize: '0.9em', flex: 1 }}>
                 {lang === 'vi' ? dish.description_vietnamese : dish.description_japanese}
               </p>
+              <button 
+                style={{ marginTop: '12px', padding: '8px 16px', backgroundColor: '#e07a3f', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                onClick={() => navigate(`/dishes/${dish.id}`)}
+              >
+                {t("viewDetails")}
+              </button>
             </div>
           ))}
         </div>
-      </div>
-
-      <div style={{ marginTop: 16 }}>
-        <button className="btn-secondary" onClick={handleLogout}>
-          {t("backToLogin")}
-        </button>
       </div>
     </>
   );

@@ -7,5 +7,7 @@
   "lang_jp": "日本語",
   "dishList": "Danh sách món ăn",
   "loading": "Đang tải...",
-  "error": "Lỗi"
+  "error": "Lỗi",
+  "viewDetails": "Xem chi tiết",
+  "noImage": "Không có ảnh"
 }

@@ -6,9 +6,10 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
+import Login from "./pages/LoginRegister/Login";
+import Register from "./pages/LoginRegister/Register";
+import Home from "./pages/Home/Home";
+// Fixed imports
 import DishApproval from "./pages/DishApproval";
 import DishDetail from "./pages/DishDetail";
 import "./App.css";
@@ -34,9 +35,6 @@ function AppLayout({ children, active, onNavigate, onLogout }) {
     </div>
   );
 }
-
-// Home content chung cho cả user và admin
-// Moved to src/pages/Home.jsx
 
 // ============= USER HOME =============
 
@@ -217,6 +215,30 @@ function AdminDetailLayout({ children }) {
   );
 }
 
+// Layout cho user detail pages
+function DetailLayout({ children }) {
+  const navigate = useNavigate();
+  const [active, setActive] = useState("home");
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  return (
+    <AppLayout
+      active={active}
+      onNavigate={(id) => {
+        navigate("/");
+      }}
+      onLogout={handleLogout}
+    >
+      {children}
+    </AppLayout>
+  );
+}
+
 // ============= MAIN APP =============
 
 function App() {
@@ -229,6 +251,15 @@ function App() {
 
         {/* ===== SHARED HOME ROUTE (USER + ADMIN) ===== */}
         <Route path="/" element={<HomeRouter />} />
+
+        <Route
+          path="/dishes/:dishId"
+          element={
+            <DetailLayout>
+              <DishDetail />
+            </DetailLayout>
+          }
+        />
 
         {/* ===== ADMIN-ONLY ROUTES ===== */}
         <Route
