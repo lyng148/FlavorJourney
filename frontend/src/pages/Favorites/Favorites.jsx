@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 export default function Favorites() {
   const { t, i18n } = useTranslation("favorites");
+  const { t: th } = useTranslation("homepage");
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [stats, setStats] = useState({ total: 0, spicy: 0, region: "-" });
@@ -107,24 +108,95 @@ export default function Favorites() {
       ) : items.length === 0 ? (
         <div className="muted">{t("empty")}</div>
       ) : (
-        <div className="fav-grid">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+            gap: "20px",
+            marginTop: "16px",
+          }}
+        >
           {items.map((dish) => (
-            <div className="fav-card" key={dish.id}>
-              <img
-                src={dish.image_url}
-                alt={dish.name_vietnamese || dish.name_japanese}
-              />
-              <div className="body">
-                <div className="title">
-                  {dish.name_vietnamese || dish.name_japanese}
-                </div>
-                <div className="desc">
-                  {dish.description_vietnamese ||
+            <div
+              key={dish.id}
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                padding: "16px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: "200px",
+                  borderRadius: "4px",
+                  marginBottom: "12px",
+                  overflow: "hidden",
+                  backgroundColor: "#f0f0f0",
+                }}
+              >
+                {dish.image_url ? (
+                  <img
+                    src={dish.image_url}
+                    alt={
+                      i18n.language === "jp"
+                        ? dish.name_japanese || dish.name_vietnamese
+                        : dish.name_vietnamese || dish.name_japanese
+                    }
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#999",
+                    }}
+                  >
+                    <span>{th("noImage")}</span>
+                  </div>
+                )}
+              </div>
+
+              <h3 style={{ margin: "0 0 8px 0" }}>
+                {i18n.language === "jp"
+                  ? dish.name_japanese || dish.name_vietnamese
+                  : dish.name_vietnamese || dish.name_japanese}
+              </h3>
+
+              <p
+                style={{ margin: 0, color: "#666", fontSize: "0.9em", flex: 1 }}
+              >
+                {i18n.language === "jp"
+                  ? dish.description_japanese ||
+                    dish.description_vietnamese ||
+                    ""
+                  : dish.description_vietnamese ||
                     dish.description_japanese ||
                     ""}
-                </div>
-              </div>
-              <div className="footer">
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginTop: "12px",
+                }}
+              >
                 <button
                   style={{
                     padding: "8px 16px",

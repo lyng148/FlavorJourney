@@ -20,12 +20,24 @@
   padding: 16px; /* match Home */
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
-.fav-card img {
+.thumb {
   width: 100%;
-  height: 200px; /* match Home */
-  object-fit: cover;
+  height: 200px;
   border-radius: 4px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .fav-card .body {
   padding: 12px;
@@ -47,6 +59,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px 12px;
+  margin-top: 12px;
 }
 .fav-stats {
   display: grid;
