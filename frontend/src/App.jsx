@@ -246,6 +246,7 @@ function App() {
       <Routes>
         {/* ===== PUBLIC ROUTES ===== */}
         <Route path="/login" element={<Login />} />
+        <Route path="/reset-password" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* ===== SHARED HOME ROUTE (USER + ADMIN) ===== */}
