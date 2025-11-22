@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 export default function Register({ onSwitchToLogin }) {
@@ -8,6 +9,7 @@ export default function Register({ onSwitchToLogin }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,7 +35,8 @@ export default function Register({ onSwitchToLogin }) {
         }
         // optionally switch to login after successful register
         alert("登録成功しました。ログインしてください。");
-        onSwitchToLogin && onSwitchToLogin();
+        navigate("/login");
+        if (onSwitchToLogin) onSwitchToLogin();
       })
       .catch((err) => {
         setError(err.message || "Network error");
@@ -98,7 +101,7 @@ export default function Register({ onSwitchToLogin }) {
           <button
             type="button"
             className="btn-secondary"
-            onClick={() => onSwitchToLogin && onSwitchToLogin()}
+            onClick={() => navigate("/login")}
           >
             ログイン画面へ
           </button>

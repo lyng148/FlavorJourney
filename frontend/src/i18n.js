@@ -4,6 +4,8 @@ import viHomepage from "./locales/vi/homepage.json";
 import jpHomepage from "./locales/jp/homepage.json";
 import viSidebar from "./locales/vi/sidebar.json";
 import jpSidebar from "./locales/jp/sidebar.json";
+import viAdmin from "./locales/vi/admin.json";
+import jpAdmin from "./locales/jp/admin.json";
 
 const stored =
   typeof window !== "undefined" ? localStorage.getItem("lang") : null;
@@ -14,10 +16,10 @@ i18n.use(initReactI18next).init({
   fallbackLng: "vi",
   debug: false,
   defaultNS: "homepage",
-  ns: ["homepage", "sidebar"],
+  ns: ["homepage", "sidebar", "admin"],
   resources: {
-    vi: { homepage: viHomepage, sidebar: viSidebar },
-    jp: { homepage: jpHomepage, sidebar: jpSidebar },
+    vi: { homepage: viHomepage, sidebar: viSidebar, admin: viAdmin },
+    jp: { homepage: jpHomepage, sidebar: jpSidebar, admin: jpAdmin },
   },
   interpolation: {
     escapeValue: false,

@@ -4,16 +4,23 @@ import "./sidebar.css";
 
 export default function Sidebar({ active = "home", onNavigate, onLogout }) {
   const { t } = useTranslation("sidebar");
-  const Item = ({ id, icon, label }) => (
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isAdmin = user.role === "admin";
+
+  const Item = ({ id, icon, label, onClick }) => (
     <div
       className={`fj-item ${active === id ? "active" : ""}`}
-      onClick={() => onNavigate && onNavigate(id)}
+      onClick={onClick || (() => onNavigate && onNavigate(id))}
       role="button"
       aria-label={label}
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          onNavigate && onNavigate(id);
+          if (onClick) {
+            onClick();
+          } else {
+            onNavigate && onNavigate(id);
+          }
         }
       }}
     >
@@ -112,6 +119,34 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
             </svg>
           }
         />
+
+        {isAdmin && (
+          <>
+            <div style={{ margin: "1rem 0", borderTop: "1px solid #e5e7eb" }} />
+            <Item
+              id="dishApproval"
+              label={t("dishApproval")}
+              icon={
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                  <path
+                    d="M9 12l2 2 4-4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                </svg>
+              }
+            />
+          </>
+        )}
       </nav>
 
       <div className="fj-spacer" />

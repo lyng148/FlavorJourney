@@ -3,7 +3,6 @@ import { FavoritesService } from './favorites.service';
 import { CreateFavoriteDto } from './dtos/create-favorite.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { I18nLang } from 'nestjs-i18n';
-import { Request } from 'express';
 
 @Controller('favorites')
 @UseGuards(JwtAuthGuard) 

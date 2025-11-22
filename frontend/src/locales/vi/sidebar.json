@@ -5,5 +5,7 @@
   "register": "Đăng ký",
   "favorites": "Yêu thích",
   "profile": "Hồ sơ",
-  "logout": "Đăng xuất"
+  "logout": "Đăng xuất",
+  "admin": "Quản trị",
+  "dishApproval": "Phê duyệt món ăn"
 }
