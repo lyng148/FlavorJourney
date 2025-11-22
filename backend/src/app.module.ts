@@ -19,6 +19,9 @@ import {
 import { join } from 'path';
 import { UploadModule } from './upload/upload.module';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { TemplateModule } from './template/template.module';
+import { RegionModule } from './region/region.module';
+import { CategoryModule } from './category/category.module';
 import * as fs from 'fs';
 
 @Module({
@@ -51,6 +54,9 @@ import * as fs from 'fs';
     DishModule,
     UploadModule,
     ViewHistoryModule,
+    TemplateModule,
+    RegionModule,
+    CategoryModule,
   ],
 
   controllers: [AppController],
