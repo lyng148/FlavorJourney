@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class GenerateTemplateDto {
@@ -8,5 +8,6 @@ export class GenerateTemplateDto {
   dishId: number;
 
   @IsString()
-  context: string;
+  @IsOptional()
+  context?: string;
 }
