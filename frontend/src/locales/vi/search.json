@@ -33,6 +33,7 @@
   "no_results": "Không tìm thấy kết quả",
   "results_found": "Tìm thấy {{ count }} món ăn",
   "submitted_by": "Được gửi bởi: {{ user }}",
+  "viewDetails": "Xem chi tiết",
   "previous": "Trước",
   "next": "Tiếp",
   "page_info": "Trang {{ current }} / {{ total }}"

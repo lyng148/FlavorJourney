@@ -25,14 +25,56 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
   const [spiceLevel, setSpiceLevel] = useState(0);
 
   useEffect(() => {
-    setLocalFilters(filters);
+    const convertedFilters = { ...filters };
+    if (Array.isArray(convertedFilters.region) && convertedFilters.region.length > 0) {
+      convertedFilters.region = convertedFilters.region
+        .map(regValue => {
+          if (!regValue || regValue === 'all') return null;
+          // Nếu đã là code (string không phải số), giữ nguyên
+          if (isNaN(Number(regValue))) {
+            return regValue;
+          }
+          // Nếu là ID (số), tìm code tương ứng
+          const region = regions.find(r => String(r.id) === String(regValue));
+          return region?.code || null;
+        })
+        .filter(reg => reg && typeof reg === 'string');
+    } else {
+      convertedFilters.region = Array.isArray(convertedFilters.region) ? convertedFilters.region : [];
+    }
+    
+    // Convert category IDs sang slugs và filter giá trị hợp lệ
+    if (Array.isArray(convertedFilters.category) && convertedFilters.category.length > 0) {
+      convertedFilters.category = convertedFilters.category
+        .map(catValue => {
+          if (!catValue || catValue === 'all') return null;
+          // Nếu đã là slug (string không phải số), giữ nguyên
+          if (isNaN(Number(catValue))) {
+            return catValue;
+          }
+          // Nếu là ID (số), tìm slug tương ứng
+          const category = categories.find(c => String(c.id) === String(catValue));
+          return category?.slug || null;
+        })
+        .filter(cat => cat && typeof cat === 'string');
+    } else {
+      convertedFilters.category = Array.isArray(convertedFilters.category) ? convertedFilters.category : [];
+    }
+    
+    // Đảm bảo taste là array
+    if (!Array.isArray(convertedFilters.taste)) {
+      convertedFilters.taste = [];
+    }
+    
+    setLocalFilters(convertedFilters);
+    
     // Khi filters thay đổi từ bên ngoài (ví dụ reset), cập nhật spiceLevel
-    const hasSpicy = filters.taste.includes('spicy');
+    const hasSpicy = Array.isArray(filters.taste) && filters.taste.includes('spicy');
     if (!hasSpicy) {
       setSpiceLevel(0);
     }
     // Nếu có spicy, giữ nguyên spiceLevel hiện tại (không reset về 3)
-  }, [filters]);
+  }, [filters, regions, categories]);
 
   // Fetch categories và regions từ API
   useEffect(() => {
@@ -82,13 +124,49 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
   };
 
   const handleSearchSubmit = () => {
-    // Khi submit, cập nhật taste filter dựa trên spiceLevel
-    // Backend hiện tại chỉ check >= 3, nên chỉ gửi 'spicy' khi level >= 3
-    const withoutSpicy = localFilters.taste.filter((taste) => taste !== 'spicy');
+    const withoutSpicy = (Array.isArray(localFilters.taste) ? localFilters.taste : [])
+      .filter((taste) => taste !== 'spicy' && taste && typeof taste === 'string');
+    
+    // Đảm bảo region và category là code/slug, không phải ID
+    const processedFilters = { ...localFilters };
+    
+    // Convert region IDs sang codes nếu cần và filter giá trị hợp lệ
+    if (Array.isArray(processedFilters.region)) {
+      processedFilters.region = processedFilters.region
+        .map(regValue => {
+          if (!regValue || regValue === 'all') return null;
+          if (isNaN(Number(regValue))) {
+            return regValue; // Đã là code
+          }
+          const region = regions.find(r => String(r.id) === String(regValue));
+          return region?.code || null;
+        })
+        .filter(reg => reg && typeof reg === 'string');
+    } else {
+      processedFilters.region = [];
+    }
+    
+    // Convert category IDs sang slugs nếu cần và filter giá trị hợp lệ
+    if (Array.isArray(processedFilters.category)) {
+      processedFilters.category = processedFilters.category
+        .map(catValue => {
+          if (!catValue || catValue === 'all') return null;
+          if (isNaN(Number(catValue))) {
+            return catValue; // Đã là slug
+          }
+          const category = categories.find(c => String(c.id) === String(catValue));
+          return category?.slug || null;
+        })
+        .filter(cat => cat && typeof cat === 'string');
+    } else {
+      processedFilters.category = [];
+    }
+    
     const updatedFilters = {
-      ...localFilters,
+      ...processedFilters,
       taste: spiceLevel >= 3 ? [...withoutSpicy, 'spicy'] : withoutSpicy,
       page: 1,
+      limit: processedFilters.limit || 20,
     };
     onFilterChange(updatedFilters);
   };
@@ -100,10 +178,10 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
   };
 
   const handleCategorySelect = (e) => {
-    const categoryId = e.target.value;
+    const categorySlug = e.target.value;
     const updatedFilters = {
       ...localFilters,
-      category: categoryId === 'all' ? [] : [categoryId],
+      category: categorySlug === 'all' ? [] : [categorySlug],
       page: 1,
     };
     // Chỉ update local state, không gọi API ngay
@@ -111,10 +189,10 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
   };
 
   const handleRegionSelect = (e) => {
-    const regionId = e.target.value;
+    const regionCode = e.target.value;
     const updatedFilters = {
       ...localFilters,
-      region: regionId === 'all' ? [] : [regionId],
+      region: regionCode === 'all' ? [] : [regionCode],
       page: 1,
     };
     // Chỉ update local state, không gọi API ngay
@@ -153,7 +231,7 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
           </button>
         </div>
         <button type="button" className="filter-summary" onClick={handleSearchSubmit}>
-          {t('Áp dụng bộ lọc')}
+          {t('filter_summary')}
         </button>
       </div>
 
@@ -168,7 +246,7 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
                 <option value="all">{t('all_regions')}</option>
                 {Array.isArray(regions) &&
                   regions.map((reg) => (
-                    <option key={reg.id} value={reg.id}>
+                    <option key={reg.id} value={reg.code || reg.id}>
                       {reg.name_vietnamese || reg.name_japanese}
                     </option>
                   ))}
@@ -190,7 +268,7 @@ const SearchFilters = ({ filters, onFilterChange, onReset }) => {
                 <option value="all">{t('all_categories')}</option>
                 {Array.isArray(categories) &&
                   categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
+                    <option key={cat.id} value={cat.slug || cat.id}>
                       {cat.name_vietnamese || cat.name_japanese}
                     </option>
                   ))}

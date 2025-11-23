@@ -98,13 +98,6 @@ function AdminHome() {
       case "search":
         return <Search />;
       case "register":
-        return (
-          <>
-            <h1>登録</h1>
-            <p>新しい投稿やレストランを登録します。（デモ）</p>
-          </>
-        );
-      case "register":
         return <RegisterDish />;
       case "favorites":
         return (

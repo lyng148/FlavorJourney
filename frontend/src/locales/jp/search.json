@@ -33,6 +33,7 @@
   "no_results": "検索結果がありません",
   "results_found": "{{ count }}個の料理が見つかりました",
   "submitted_by": "投稿者：{{ user }}",
+  "viewDetails": "詳細を見る",
   "previous": "前へ",
   "next": "次へ",
   "page_info": "ページ {{ current }} / {{ total }}"
