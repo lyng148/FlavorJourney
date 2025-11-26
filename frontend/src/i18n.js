@@ -24,6 +24,8 @@ import jpProfile from "./locales/jp/profile.json";
 
 import viChangePassword from "./locales/vi/change_password.json";
 import jpChangePassword from "./locales/jp/change_password.json";
+import viAiGenerator from "./locales/vi/ai_generator.json";
+import jpAiGenerator from "./locales/jp/ai_generator.json";
 
 const stored =
   typeof window !== "undefined" ? localStorage.getItem("lang") : null;
@@ -44,6 +46,7 @@ i18n.use(initReactI18next).init({
     "search",
     "profile",
     "change_password",
+    "ai_generator",
   ],
 
   resources: {
@@ -56,6 +59,7 @@ i18n.use(initReactI18next).init({
       search: viSearch,
       profile: viProfile,
       change_password: viChangePassword,
+      ai_generator: viAiGenerator,
     },
     jp: {
       homepage: jpHomepage,
@@ -66,6 +70,7 @@ i18n.use(initReactI18next).init({
       search: jpSearch,
       profile: jpProfile,
       change_password: jpChangePassword,
+      ai_generator: jpAiGenerator,
     },
   },
 

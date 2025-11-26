@@ -1,6 +1,6 @@
 .dish-detail-page {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -33,11 +33,25 @@
   background-color: #4b5563;
 }
 
+.dish-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+  gap: 1.5rem;
+}
+
+.dish-detail-main {
+  min-width: 0;
+}
+
 .dish-detail-container {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
   padding: 2rem;
+}
+
+.ai-panel-wrapper {
+  position: relative;
 }
 
 .dish-status-section {
@@ -231,6 +245,16 @@
 
 .btn-secondary:hover {
   background-color: #d1d5db;
+}
+
+@media (max-width: 1024px) {
+  .dish-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-panel-wrapper {
+    position: static;
+  }
 }
 
 @media (max-width: 768px) {

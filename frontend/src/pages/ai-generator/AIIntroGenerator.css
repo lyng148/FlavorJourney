@@ -1,0 +1,225 @@
+.ai-generator-card {
+  background: linear-gradient(180deg, #ffece0, #ffd1b8);
+  border-radius: 24px;
+  padding: 1.75rem;
+  color: #4a1d0f;
+  box-shadow: 0 20px 40px rgba(247, 107, 35, 0.2);
+  position: sticky;
+  top: 1.5rem;
+}
+
+.ai-generator-header h2 {
+  font-size: 1.5rem;
+  margin: 0.25rem 0 0;
+}
+
+.ai-generator-eyebrow {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #c7511f;
+}
+
+.ai-generator-subtitle {
+  font-size: 0.95rem;
+  color: #7d2e15;
+  margin-top: 0.5rem;
+}
+
+.ai-generator-section {
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ai-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #5c210f;
+}
+
+.ai-label textarea {
+  border: 1px solid rgba(244, 114, 52, 0.4);
+  border-radius: 12px;
+  padding: 0.75rem;
+  resize: vertical;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.ai-label textarea:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+
+.ai-error {
+  color: #b91c1c;
+  background: rgba(248, 113, 113, 0.2);
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.ai-generate-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.25rem;
+  background: #f97316;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-generate-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(249, 115, 22, 0.3);
+}
+
+.ai-results {
+  margin-top: 1.5rem;
+}
+
+.ai-results-header {
+  display: flex;
+  justify-content: space-between;
+  color: #7d2e15;
+  margin-bottom: 0.75rem;
+}
+
+.ai-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.ai-result-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.25rem;
+  border: 1px solid rgba(249, 115, 22, 0.12);
+  box-shadow: 0 12px 24px rgba(249, 115, 22, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ai-result-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ai-result-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #6b1c0f;
+}
+
+.ai-result-tags {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.ai-result-tags span {
+  font-size: 0.8rem;
+  background: #ffe7d5;
+  color: #b45309;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+}
+
+.ai-result-content {
+  background: #fff;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  border-radius: 14px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.ai-result-lang-pill {
+  align-self: flex-start;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #ffe7d5;
+  color: #b45309;
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+}
+
+.ai-result-text {
+  font-size: 0.95rem;
+  color: #5c210f;
+  line-height: 1.6;
+}
+
+.ai-result-text.vi {
+  color: #7c2d12;
+  opacity: 0.85;
+}
+
+.tone-chip {
+  font-size: 0.8rem;
+  background: #f5f5f5;
+  color: #6b7280;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+}
+
+.tone-chip-primary {
+  background: #f5d8ff;
+  color: #7a22b5;
+  font-weight: 600;
+}
+
+.ai-copy-card {
+  border: none;
+  width: 100%;
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: #f97316;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-copy-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.25);
+}
+
+.ai-copy-card.copied {
+  background: #fdba74;
+  box-shadow: 0 10px 20px rgba(253, 186, 116, 0.35);
+}
+
+.ai-audio-player {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 1024px) {
+  .ai-generator-card {
+    position: static;
+  }
+}
+
