@@ -10,6 +10,7 @@ function MySubmissions() {
   const { t, i18n } = useTranslation("mySubmissions");
   const navigate = useNavigate();
   const [mySubmissions, setMySubmissions] = useState([]);
+  const [allSubmissions, setAllSubmissions] = useState([]); // Store all submissions for filtering
   const [submissionsStats, setSubmissionsStats] = useState({
     total: 0,
     approved: 0,
@@ -18,8 +19,19 @@ function MySubmissions() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all"); // Filter state: "all", "approved", "pending", "rejected"
 
   const currentLang = i18n.language;
+
+  // Apply status filter function
+  const applyStatusFilter = (submissions, filter) => {
+    if (filter === "all") {
+      setMySubmissions(submissions);
+    } else {
+      const filtered = submissions.filter((dish) => dish.status === filter);
+      setMySubmissions(filtered);
+    }
+  };
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -68,7 +80,9 @@ function MySubmissions() {
         };
 
         setSubmissionsStats(stats);
-        setMySubmissions(filteredSubmissions);
+        setAllSubmissions(filteredSubmissions);
+        // Apply initial filter
+        applyStatusFilter(filteredSubmissions, statusFilter);
       } catch (err) {
         console.error("Error fetching submissions:", err);
         setError(err.message);
@@ -132,6 +146,12 @@ function MySubmissions() {
 
   const getStatusClass = (status) => {
     return `status-badge status-${status || "pending"}`;
+  };
+
+  // Handle filter change
+  const handleFilterChange = (newFilter) => {
+    setStatusFilter(newFilter);
+    applyStatusFilter(allSubmissions, newFilter);
   };
 
   if (loading) {
@@ -211,15 +231,52 @@ function MySubmissions() {
       </div>
 
       <div className="submissions-list-section">
-        <h2>{t("submissionsList")}</h2>
+        <div className="submissions-list-header">
+          <h2>{t("submissionsList")}</h2>
+          {/* Filter Buttons */}
+          <div className="status-filter-buttons">
+            <button
+              className={`filter-btn ${statusFilter === "all" ? "active" : ""}`}
+              onClick={() => handleFilterChange("all")}
+            >
+              {currentLang === "jp" ? "すべて" : "Tất cả"}
+            </button>
+            <button
+              className={`filter-btn ${statusFilter === "approved" ? "active" : ""}`}
+              onClick={() => handleFilterChange("approved")}
+            >
+              {getStatusLabel("approved")}
+            </button>
+            <button
+              className={`filter-btn ${statusFilter === "pending" ? "active" : ""}`}
+              onClick={() => handleFilterChange("pending")}
+            >
+              {getStatusLabel("pending")}
+            </button>
+            <button
+              className={`filter-btn ${statusFilter === "rejected" ? "active" : ""}`}
+              onClick={() => handleFilterChange("rejected")}
+            >
+              {getStatusLabel("rejected")}
+            </button>
+          </div>
+        </div>
         {mySubmissions.length === 0 ? (
           <div className="empty-state">
             <MdRestaurantMenu size={64} style={{ color: "#9ca3af" }} />
             <p className="empty-text">{t("noSubmissions")}</p>
           </div>
         ) : (
-          <div className="submissions-grid">
-            {mySubmissions.map((dish) => (
+          <>
+            {statusFilter !== "all" && (
+              <div className="filter-result-info">
+                {currentLang === "jp" 
+                  ? `${getStatusLabel(statusFilter)}: ${mySubmissions.length}件`
+                  : `${getStatusLabel(statusFilter)}: ${mySubmissions.length} món`}
+              </div>
+            )}
+            <div className="submissions-grid">
+              {mySubmissions.map((dish) => (
               <div
                 key={dish.id}
                 className="submission-card"
@@ -273,8 +330,9 @@ function MySubmissions() {
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

@@ -92,7 +92,7 @@ function Profile() {
         // Sử dụng Set để loại bỏ món trùng lặp dựa trên dish.id
         const items = historyData.items || [];
         const uniqueMap = new Map();
-        items.forEach(item => {
+        items.forEach((item) => {
           if (!uniqueMap.has(item.dish.id)) {
             uniqueMap.set(item.dish.id, item);
           }
@@ -330,15 +330,30 @@ function Profile() {
         </div>
       </div>
 
-      <div className="my-submissions-section">
+      <div
+        className="my-submissions-section clickable-section"
+        onClick={() => navigate("/my-submissions")}
+      >
         <div className="submissions-header">
           <h3>{t("mySubmissions")}</h3>
-          <button
-            className="btn-view-all"
-            onClick={() => navigate("/my-submissions")}
-          >
-            {t("viewAll")}
-          </button>
+          <div className="view-all-indicator">
+            <span>{t("viewAll")}</span>
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              style={{ marginLeft: "0.5rem" }}
+            >
+              <path
+                d="M9 18l6-6-6-6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         </div>
 
         <div className="submissions-overview">
