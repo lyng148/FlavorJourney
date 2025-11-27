@@ -40,6 +40,7 @@ function AppLayout({ children, active }) {
       register: "/register-dish",
       favorites: "/favorites",
       profile: "/profile",
+      mySubmissions: "/my-submissions",
       dishApproval: "/dish-approval",
     };
 
