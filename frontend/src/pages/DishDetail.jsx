@@ -249,29 +249,6 @@ function DishDetail() {
     return `${(level / 5) * 100}%`;
   };
 
-  const getSpiceLevelText = (level) => {
-    if (!level || level === 0)
-      return currentLang === "jp" ? "辛くない" : "Không cay";
-    if (level <= 1) return currentLang === "jp" ? "少し辛い" : "Hơi cay";
-    if (level <= 2) return currentLang === "jp" ? "少し辛い" : "Hơi cay";
-    if (level <= 3) return currentLang === "jp" ? "中辛" : "Vừa cay";
-    return currentLang === "jp" ? "とても辛い" : "Rất cay";
-  };
-
-  const getSpiceStars = (level) => {
-    const filled = level || 0;
-    const empty = 5 - filled;
-    return "★".repeat(filled) + "☆".repeat(empty);
-  };
-
-  const parseIngredients = (ingredients) => {
-    if (!ingredients) return [];
-    return ingredients
-      .split(/[,;\n]/)
-      .map((ing) => ing.trim())
-      .filter((ing) => ing.length > 0);
-  };
-
   if (loading) {
     return (
       <div className="dish-detail-page">
@@ -295,178 +272,192 @@ function DishDetail() {
     ? tf("removeFromFavorites")
     : tf("addToFavorites");
 
-  const ingredientsList = parseIngredients(dish.ingredients);
-
   return (
     <div className="dish-detail-page">
-      {/* Back Button Header */}
       <div className="dish-detail-header">
-        <button
-          className="btn-back-to-search"
-          onClick={() => navigate("/search")}
-        >
-          <span className="back-arrow">←</span>
-          <span>
-            {currentLang === "jp" ? "検索に戻る" : "Quay lại tìm kiếm"}
-          </span>
-        </button>
-        {isAdmin && (
-          <div className="admin-status-badge">
-            <span className={`status-badge ${dish.status || "pending"}`}>
-              {t(`dishApproval.${dish.status || "pending"}`)}
-            </span>
-          </div>
-        )}
+        <h1>{t("dishApproval.dishDetails")}</h1>
+        <div>
+          <button
+            className="btn-secondary"
+            disabled={favLoading}
+            onClick={handleToggleFavorite}
+            style={{ marginRight: 8 }}
+          >
+            {favLabel}
+          </button>
+          <button className="btn-back" onClick={() => navigate("/")}>
+            {t("dishApproval.back")}
+          </button>
+        </div>
       </div>
 
-      <div
-        className={`dish-detail-layout ${
-          dish.status !== "pending" ? "single-column" : ""
-        }`}
-      >
-        {/* LEFT COLUMN - Dish Info */}
+      <div className="dish-detail-layout">
         <div className="dish-detail-main">
-          <div className="dish-info-wrapper">
-            {/* Dish Image Card */}
-            <div className="dish-section-card">
-              <div className="dish-image-large">
+          <div className="dish-detail-container">
+            {isAdmin && (
+              <div className="dish-status-section">
+                <span className="info-label">{t("dishApproval.status")}:</span>
+                <span className={`status-badge ${dish.status || "pending"}`}>
+                  {t(`dishApproval.${dish.status || "pending"}`)}
+                </span>
+              </div>
+            )}
+
+            <div className="dish-content">
+              <div className="dish-image-section">
                 {dish.image_url ? (
                   <img
                     src={dish.image_url}
                     alt={getDishName(dish)}
-                    className="dish-main-image"
+                    className="dish-detail-image"
                   />
                 ) : (
-                  <div className="no-image-large">
-                    <span>{t("dishApproval.image")}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="dish-section-card">
-              <div className="dish-title-section">
-                <h1 className="dish-name-primary">{getDishName(dish)}</h1>
-                {(currentLang === "jp"
-                  ? dish.name_vietnamese
-                  : dish.name_japanese) && (
-                  <h2 className="dish-name-secondary">
-                    {currentLang === "jp"
-                      ? dish.name_vietnamese
-                      : dish.name_japanese}
-                  </h2>
+                  <div className="no-image">{t("dishApproval.image")}</div>
                 )}
               </div>
 
-              {getDescription(dish) && (
-                <div
-                  className="dish-description-content"
-                  style={{ marginTop: 8 }}
-                >
-                  <p>{getDescription(dish)}</p>
+              <div className="dish-info-section">
+                <div className="info-group">
+                  <span className="info-label">
+                    {t("dishApproval.nameJapanese")}
+                  </span>
+                  <span className="info-value">{dish.name_japanese || "-"}</span>
                 </div>
-              )}
+
+                <div className="info-group">
+                  <span className="info-label">
+                    {t("dishApproval.nameVietnamese")}
+                  </span>
+                  <span className="info-value">
+                    {dish.name_vietnamese || "-"}
+                  </span>
+                </div>
+
+                <div className="info-group">
+                  <span className="info-label">
+                    {t("dishApproval.nameRomaji")}
+                  </span>
+                  <span className="info-value">{dish.name_romaji || "-"}</span>
+                </div>
+
+                <div className="info-group">
+                  <span className="info-label">{t("dishApproval.category")}</span>
+                  <span className="info-value">
+                    {getCategoryName(dish.category)}
+                  </span>
+                </div>
+
+                <div className="info-group">
+                  <span className="info-label">{t("dishApproval.region")}</span>
+                  <span className="info-value">{getRegionName(dish.region)}</span>
+                </div>
+
+                <div className="info-group">
+                  <span className="info-label">
+                    {t("dishApproval.submittedBy")}
+                  </span>
+                  <span className="info-value">
+                    {dish.submitted_id?.username || "-"}
+                  </span>
+                </div>
+
+                <div className="info-group">
+                  <span className="info-label">
+                    {t("dishApproval.submittedAt")}
+                  </span>
+                  <span className="info-value">
+                    {formatDate(dish.submitted_at)}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Region + Category Card */}
-            {(dish.region || dish.category) && (
-              <div className="dish-section-card">
-                <div className="dish-chips-grid">
-                  {dish.region && (
-                    <div className="dish-meta-card">
-                      <span className="meta-label">
-                        {currentLang === "jp" ? "地域" : "Khu vực"}
-                      </span>
-                      <span className="chip chip-orange">
-                        {getRegionName(dish.region)}
-                      </span>
-                    </div>
-                  )}
-
-                  {dish.category && (
-                    <div className="dish-meta-card">
-                      <span className="meta-label">
-                        {currentLang === "jp" ? "カテゴリー" : "Danh mục"}
-                      </span>
-                      <span className="chip chip-blue">
-                        {getCategoryName(dish.category)}
-                      </span>
-                    </div>
-                  )}
-                </div>
+            <div className="dish-info-section" style={{ marginTop: "2rem" }}>
+              <div className="info-group">
+                <span className="info-label">
+                  {currentLang === "jp"
+                    ? t("dishApproval.descriptionJapanese")
+                    : t("dishApproval.descriptionVietnamese")}
+                </span>
+                <span className="info-value">
+                  {getDescription(dish) || <span className="empty">-</span>}
+                </span>
               </div>
-            )}
 
-            {/* Spice Level Card */}
-            {dish.spiciness_level !== null &&
-              dish.spiciness_level !== undefined && (
-                <div className="dish-section-card">
-                  <div className="spice-level-section">
-                    <span className="spice-label">
-                      {currentLang === "jp" ? "辛さレベル" : "Mức độ cay"}
+              <div className="info-group">
+                <span className="info-label">{t("dishApproval.ingredients")}</span>
+                <span className="info-value">
+                  {dish.ingredients || <span className="empty">-</span>}
+                </span>
+              </div>
+
+              <div className="info-group">
+                <span className="info-label">{t("dishApproval.howToEat")}</span>
+                <span className="info-value">
+                  {dish.how_to_eat || <span className="empty">-</span>}
+                </span>
+              </div>
+
+              <div className="info-group">
+                <span className="info-label">
+                  {currentLang === "jp" ? "味レベル" : "Mức độ hương vị"}
+                </span>
+                <div className="taste-levels">
+                  <div className="taste-item">
+                    <span>{t("dishApproval.spiciness")}</span>
+                    <div className="taste-level-bar">
+                      <div
+                        className="taste-level-fill"
+                        style={{ width: getTasteLevelWidth(dish.spiciness_level) }}
+                      />
+                    </div>
+                    <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                      {dish.spiciness_level || 0}/5
                     </span>
-                    <span className="spice-badge">
-                      {getSpiceLevelText(dish.spiciness_level)}{" "}
-                      {getSpiceStars(dish.spiciness_level)}
+                  </div>
+
+                  <div className="taste-item">
+                    <span>{t("dishApproval.saltiness")}</span>
+                    <div className="taste-level-bar">
+                      <div
+                        className="taste-level-fill"
+                        style={{ width: getTasteLevelWidth(dish.saltiness_level) }}
+                      />
+                    </div>
+                    <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                      {dish.saltiness_level || 0}/5
+                    </span>
+                  </div>
+
+                  <div className="taste-item">
+                    <span>{t("dishApproval.sweetness")}</span>
+                    <div className="taste-level-bar">
+                      <div
+                        className="taste-level-fill"
+                        style={{ width: getTasteLevelWidth(dish.sweetness_level) }}
+                      />
+                    </div>
+                    <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                      {dish.sweetness_level || 0}/5
+                    </span>
+                  </div>
+
+                  <div className="taste-item">
+                    <span>{t("dishApproval.sourness")}</span>
+                    <div className="taste-level-bar">
+                      <div
+                        className="taste-level-fill"
+                        style={{ width: getTasteLevelWidth(dish.sourness_level) }}
+                      />
+                    </div>
+                    <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                      {dish.sourness_level || 0}/5
                     </span>
                   </div>
                 </div>
-              )}
-
-            {/* Ingredients Card */}
-            {ingredientsList.length > 0 && (
-              <div className="dish-section-card">
-                <div className="ingredients-section">
-                  <span className="ingredients-label">
-                    {currentLang === "jp" ? "主な材料" : "Nguyên liệu chính"}
-                  </span>
-                  <div className="ingredients-tags">
-                    {ingredientsList.map((ingredient, index) => (
-                      <span key={index} className="ingredient-tag">
-                        {ingredient}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
-            )}
 
-            {/* Favorite Button Card */}
-            {!isAdmin && (
-              <div className="dish-section-card">
-                <button
-                  className={`btn-favorite ${isFavorite ? "active" : ""}`}
-                  disabled={favLoading}
-                  onClick={handleToggleFavorite}
-                >
-                  <span className="favorite-icon">
-                    {isFavorite ? "❤" : "♡"}
-                  </span>
-                  <span>{favLabel}</span>
-                </button>
-              </div>
-            )}
-
-            {/* Admin Actions */}
-            {isAdmin && dish.status === "pending" && (
-              <div className="dish-section-card">
-                <div className="approval-actions">
-                  <button
-                    className="btn btn-reject"
-                    onClick={handleRejectClick}
-                  >
-                    {t("dishApproval.reject")}
-                  </button>
-                  <button className="btn btn-approve" onClick={handleApprove}>
-                    {t("dishApproval.approve")}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Rejection Reason (Admin only) */}
-            {isAdmin && dish.status === "rejected" && dish.rejection_reason && (
-              <div className="dish-section-card">
+              {dish.status === "rejected" && dish.rejection_reason && (
                 <div className="rejection-section">
                   <div className="info-group">
                     <span className="info-label">
@@ -475,17 +466,38 @@ function DishDetail() {
                     <span className="info-value">{dish.rejection_reason}</span>
                   </div>
                 </div>
+              )}
+
+              {dish.reviewed_by && (
+                <>
+                  <div className="info-group">
+                    <span className="info-label">
+                      {t("dishApproval.reviewedAt")}
+                    </span>
+                    <span className="info-value">
+                      {formatDate(dish.reviewed_at)}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {dish.status === "pending" && (
+              <div className="approval-actions">
+                <button className="btn btn-reject" onClick={handleRejectClick}>
+                  {t("dishApproval.reject")}
+                </button>
+                <button className="btn btn-approve" onClick={handleApprove}>
+                  {t("dishApproval.approve")}
+                </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* RIGHT COLUMN - AI Generator - Only show for pending dishes */}
-        {dish.status === "pending" && (
-          <div className="ai-panel-wrapper">
-            <AIIntroGenerator dish={dish} />
-          </div>
-        )}
+        <div className="ai-panel-wrapper">
+          <AIIntroGenerator dish={dish} />
+        </div>
       </div>
 
       {showRejectModal && (

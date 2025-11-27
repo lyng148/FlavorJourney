@@ -128,6 +128,22 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
             </svg>
           }
         />
+        {!isAdmin && (
+          <Item
+            id="mySubmissions"
+            label={t("mySubmissions")}
+            icon={
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                <path
+                  d="M3 10h18M3 14h18M5 6h14M5 18h14"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            }
+          />
+        )}
 
         {isAdmin && (
           <>
