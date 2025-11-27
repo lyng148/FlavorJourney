@@ -88,7 +88,17 @@ function Profile() {
 
         if (!historyRes.ok) throw new Error("Failed to fetch history");
         const historyData = await historyRes.json();
-        setHistory(historyData.items || []);
+
+        // Sử dụng Set để loại bỏ món trùng lặp dựa trên dish.id
+        const items = historyData.items || [];
+        const uniqueMap = new Map();
+        items.forEach(item => {
+          if (!uniqueMap.has(item.dish.id)) {
+            uniqueMap.set(item.dish.id, item);
+          }
+        });
+        const uniqueHistory = Array.from(uniqueMap.values());
+        setHistory(uniqueHistory);
 
         // 4. Fetch My Submissions để tính toán thống kê (không hiển thị chi tiết)
         const submissionsRes = await fetch(`${API_URL}/dishes/my-submissions`, {
