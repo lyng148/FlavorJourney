@@ -9,24 +9,27 @@
 .ai-generator-header h2 {
   font-size: 1.5rem;
   margin: 0.25rem 0 0;
+  color: #333;
+  font-weight: 700;
 }
 
 .ai-generator-eyebrow {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #c7511f;
+  color: #e07a3f;
+  font-weight: 600;
 }
 
 .ai-generator-subtitle {
   font-size: 0.95rem;
-  color: #7d2e15;
+  color: #666;
   margin-top: 0.5rem;
 }
 
 .ai-generator-section {
   margin-top: 1.5rem;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   padding: 1.25rem;
   display: flex;
@@ -39,7 +42,7 @@
   flex-direction: column;
   gap: 0.5rem;
   font-weight: 600;
-  color: #5c210f;
+  color: #374151;
 }
 
 .ai-label textarea {
@@ -99,8 +102,16 @@
 .ai-results-header {
   display: flex;
   justify-content: space-between;
-  color: #7d2e15;
+  color: #333;
   margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.ai-results-header h3 {
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
 }
 
 .ai-results-list {
