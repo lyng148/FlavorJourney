@@ -247,6 +247,38 @@
   width: fit-content;
 }
 
+/* Taste Levels Grid */
+.taste-levels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.taste-level-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.taste-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.taste-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #ffe8dd;
+  color: #ff7a3d;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  width: fit-content;
+}
+
 /* Ingredients Section */
 .ingredients-section {
   display: flex;
@@ -529,5 +561,9 @@
 
   .approval-actions .btn {
     width: 100%;
+  }
+
+  .taste-levels-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -171,11 +171,29 @@ export default function Favorites() {
                 )}
               </div>
 
-              <h3 style={{ margin: "0 0 8px 0" }}>
-                {i18n.language === "jp"
-                  ? dish.name_japanese || dish.name_vietnamese
-                  : dish.name_vietnamese || dish.name_japanese}
-              </h3>
+              <div style={{ margin: "0 0 8px 0" }}>
+                <h3 style={{ margin: 0, fontSize: "1.1em", fontWeight: 600 }}>
+                  {i18n.language === "jp"
+                    ? dish.name_japanese || dish.name_vietnamese
+                    : dish.name_vietnamese || dish.name_japanese}
+                </h3>
+                {(i18n.language === "jp"
+                  ? dish.name_vietnamese
+                  : dish.name_japanese) && (
+                  <p
+                    style={{
+                      margin: "4px 0 0 0",
+                      fontSize: "0.9em",
+                      color: "#666",
+                      fontWeight: 400,
+                    }}
+                  >
+                    {i18n.language === "jp"
+                      ? dish.name_vietnamese
+                      : dish.name_japanese}
+                  </p>
+                )}
+              </div>
 
               <p
                 style={{ margin: 0, color: "#666", fontSize: "0.9em", flex: 1 }}
@@ -232,11 +250,17 @@ export default function Favorites() {
       <div className="fav-stats">
         <div className="fav-stat">
           <div className="muted">{t("stats.savedCount")}</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.total} 件</div>
+          <div style={{ fontSize: 24, fontWeight: 700 }}>
+            {stats.total}
+            {i18n.language === "jp" ? " 件" : " món"}
+          </div>
         </div>
         <div className="fav-stat">
           <div className="muted">{t("stats.spicyCount")}</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.spicy} 件</div>
+          <div style={{ fontSize: 24, fontWeight: 700 }}>
+            {stats.spicy}
+            {i18n.language === "jp" ? " 件" : " món"}
+          </div>
         </div>
         <div className="fav-stat">
           <div className="muted">{t("stats.popularRegion")}</div>

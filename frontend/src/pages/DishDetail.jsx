@@ -257,7 +257,34 @@ function DishDetail() {
     return currentLang === "jp" ? "とても辛い" : "Rất cay";
   };
 
-  const getSpiceStars = (level) => {
+  const getSaltinessLevelText = (level) => {
+    if (!level || level === 0)
+      return currentLang === "jp" ? "塩辛くない" : "Không mặn";
+    if (level <= 1) return currentLang === "jp" ? "少し塩辛い" : "Hơi mặn";
+    if (level <= 2) return currentLang === "jp" ? "少し塩辛い" : "Hơi mặn";
+    if (level <= 3) return currentLang === "jp" ? "中塩" : "Vừa mặn";
+    return currentLang === "jp" ? "とても塩辛い" : "Rất mặn";
+  };
+
+  const getSweetnessLevelText = (level) => {
+    if (!level || level === 0)
+      return currentLang === "jp" ? "甘くない" : "Không ngọt";
+    if (level <= 1) return currentLang === "jp" ? "少し甘い" : "Hơi ngọt";
+    if (level <= 2) return currentLang === "jp" ? "少し甘い" : "Hơi ngọt";
+    if (level <= 3) return currentLang === "jp" ? "中甘" : "Vừa ngọt";
+    return currentLang === "jp" ? "とても甘い" : "Rất ngọt";
+  };
+
+  const getSournessLevelText = (level) => {
+    if (!level || level === 0)
+      return currentLang === "jp" ? "酸っぱくない" : "Không chua";
+    if (level <= 1) return currentLang === "jp" ? "少し酸っぱい" : "Hơi chua";
+    if (level <= 2) return currentLang === "jp" ? "少し酸っぱい" : "Hơi chua";
+    if (level <= 3) return currentLang === "jp" ? "中酸" : "Vừa chua";
+    return currentLang === "jp" ? "とても酸っぱい" : "Rất chua";
+  };
+
+  const getStars = (level) => {
     const filled = level || 0;
     const empty = 5 - filled;
     return "★".repeat(filled) + "☆".repeat(empty);
@@ -389,21 +416,71 @@ function DishDetail() {
               </div>
             )}
 
-            {/* Spice Level Card */}
-            {dish.spiciness_level !== null &&
-              dish.spiciness_level !== undefined && (
-                <div className="dish-section-card">
-                  <div className="spice-level-section">
-                    <span className="spice-label">
-                      {currentLang === "jp" ? "辛さレベル" : "Mức độ cay"}
-                    </span>
-                    <span className="spice-badge">
-                      {getSpiceLevelText(dish.spiciness_level)}{" "}
-                      {getSpiceStars(dish.spiciness_level)}
-                    </span>
-                  </div>
+            {/* Taste Levels Card */}
+            {(dish.spiciness_level !== null &&
+              dish.spiciness_level !== undefined) ||
+            (dish.saltiness_level !== null &&
+              dish.saltiness_level !== undefined) ||
+            (dish.sweetness_level !== null &&
+              dish.sweetness_level !== undefined) ||
+            (dish.sourness_level !== null &&
+              dish.sourness_level !== undefined) ? (
+              <div className="dish-section-card">
+                <div className="taste-levels-grid">
+                  {dish.spiciness_level !== null &&
+                    dish.spiciness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "辛さ" : "Độ cay"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSpiceLevelText(dish.spiciness_level)}{" "}
+                          {getStars(dish.spiciness_level)}
+                        </span>
+                      </div>
+                    )}
+
+                  {dish.saltiness_level !== null &&
+                    dish.saltiness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "塩味" : "Độ mặn"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSaltinessLevelText(dish.saltiness_level)}{" "}
+                          {getStars(dish.saltiness_level)}
+                        </span>
+                      </div>
+                    )}
+
+                  {dish.sweetness_level !== null &&
+                    dish.sweetness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "甘さ" : "Độ ngọt"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSweetnessLevelText(dish.sweetness_level)}{" "}
+                          {getStars(dish.sweetness_level)}
+                        </span>
+                      </div>
+                    )}
+
+                  {dish.sourness_level !== null &&
+                    dish.sourness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "酸味" : "Độ chua"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSournessLevelText(dish.sourness_level)}{" "}
+                          {getStars(dish.sourness_level)}
+                        </span>
+                      </div>
+                    )}
                 </div>
-              )}
+              </div>
+            ) : null}
 
             {/* Ingredients Card */}
             {ingredientsList.length > 0 && (
