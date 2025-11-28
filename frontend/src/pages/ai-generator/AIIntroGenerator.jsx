@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./AIIntroGenerator.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
@@ -119,9 +121,11 @@ function AIIntroGenerator({ dish }) {
     try {
       await navigator.clipboard.writeText(value);
       setCopiedKey(key);
+      toast.success(t("actions.copySuccess"));
       setTimeout(() => setCopiedKey(null), 800);
     } catch (err) {
       console.error("Clipboard error", err);
+      toast.error(t("errors.generic"));
     }
   };
 
@@ -244,6 +248,18 @@ function AIIntroGenerator({ dish }) {
           </div>
         </section>
       )}
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

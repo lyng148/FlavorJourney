@@ -17,7 +17,8 @@
   "actions": {
     "copyJa": "Sao chép",
     "copyVi": "Sao chép",
-    "copyCard": "Sao chép"
+    "copyCard": "Sao chép",
+    "copySuccess": "Đã sao chép thành công!"
   },
   "audioFallback": "Trình duyệt không hỗ trợ audio.",
   "tone": {

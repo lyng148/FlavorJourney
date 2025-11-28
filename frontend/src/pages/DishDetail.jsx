@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AIIntroGenerator from "./ai-generator/AIIntroGenerator";
 import "./DishDetail.css";
 
@@ -15,6 +17,7 @@ function DishDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
@@ -100,11 +103,15 @@ function DishDetail() {
     fetchDishDetail();
   }, [dishId, navigate, t]);
 
-  const handleApprove = async () => {
-    if (!window.confirm(t("dishApproval.confirmApprove"))) {
-      return;
-    }
+  const handleApproveClick = () => {
+    setShowApproveModal(true);
+  };
 
+  const handleApproveCancel = () => {
+    setShowApproveModal(false);
+  };
+
+  const handleApproveConfirm = async () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(`${API_URL}/dishes/${dishId}`, {
@@ -120,11 +127,12 @@ function DishDetail() {
         throw new Error("Failed to approve dish");
       }
 
-      alert(t("dishApproval.approveSuccess"));
+      toast.success(t("dishApproval.approveSuccess"));
+      setShowApproveModal(false);
       navigate("/");
     } catch (err) {
       console.error("Error approving dish:", err);
-      alert(t("dishApproval.approveFailed"));
+      toast.error(t("dishApproval.approveFailed"));
     }
   };
 
@@ -134,7 +142,7 @@ function DishDetail() {
 
   const handleRejectConfirm = async () => {
     if (!rejectionReason.trim()) {
-      alert(t("dishApproval.enterRejectionReason"));
+      toast.error(t("dishApproval.enterRejectionReason"));
       return;
     }
 
@@ -156,11 +164,13 @@ function DishDetail() {
         throw new Error("Failed to reject dish");
       }
 
-      alert(t("dishApproval.rejectSuccess"));
+      toast.success(t("dishApproval.rejectSuccess"));
+      setShowRejectModal(false);
+      setRejectionReason("");
       navigate("/");
     } catch (err) {
       console.error("Error rejecting dish:", err);
-      alert(t("dishApproval.rejectFailed"));
+      toast.error(t("dishApproval.rejectFailed"));
     }
   };
 
@@ -439,7 +449,7 @@ function DishDetail() {
                   >
                     {t("dishApproval.reject")}
                   </button>
-                  <button className="btn btn-approve" onClick={handleApprove}>
+                  <button className="btn btn-approve" onClick={handleApproveClick}>
                     {t("dishApproval.approve")}
                   </button>
                 </div>
@@ -468,6 +478,22 @@ function DishDetail() {
         </div>
       </div>
 
+      {showApproveModal && (
+        <div className="modal-overlay" onClick={handleApproveCancel}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{t("dishApproval.confirmApprove")}</h3>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={handleApproveCancel}>
+                {t("dishApproval.cancel")}
+              </button>
+              <button className="btn btn-approve" onClick={handleApproveConfirm}>
+                {t("dishApproval.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showRejectModal && (
         <div className="modal-overlay" onClick={handleRejectCancel}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -488,6 +514,19 @@ function DishDetail() {
           </div>
         </div>
       )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

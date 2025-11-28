@@ -17,7 +17,8 @@
   "actions": {
     "copyJa": "コピー",
     "copyVi": "コピー",
-    "copyCard": "コピー"
+    "copyCard": "コピー",
+    "copySuccess": "コピーしました！"
   },
   "audioFallback": "ブラウザがオーディオ再生に対応していません。",
   "tone": {

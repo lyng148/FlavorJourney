@@ -185,15 +185,31 @@ const Search = () => {
             )}
           </div>
           <div className="sort-control">
-            <label htmlFor="sort-select">{t('sort_label')}</label>
-            <select
-              id="sort-select"
-              value={filters.sort}
-              onChange={(e) => handleSortChange(e.target.value)}
-            >
-              <option value="latest">{t('sort.latest')}</option>
-              <option value="popular">{t('sort.popular')}</option>
-            </select>
+            <span className="sort-label">{t('sort_label')}</span>
+            <div className="sort-buttons">
+              <button
+                type="button"
+                className={`sort-btn ${filters.sort === 'latest' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSortChange('latest');
+                }}
+              >
+                <span className="sort-icon">🕐</span>
+                {t('sort.latest')}
+              </button>
+              <button
+                type="button"
+                className={`sort-btn ${filters.sort === 'popular' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSortChange('popular');
+                }}
+              >
+                <span className="sort-icon">🔥</span>
+                {t('sort.popular')}
+              </button>
+            </div>
           </div>
         </div>
 
