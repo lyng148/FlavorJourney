@@ -1,15 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './DishList.css';
 
 const DishList = ({ dishes }) => {
   const { t } = useTranslation('search');
-
-  const handleDishClick = (dishId) => {
-    // TODO: Navigate to dish detail page when routing is implemented
-    console.log('Clicked dish:', dishId);
-    alert(`Chi tiết món ăn ID: ${dishId}`);
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="dish-list">
@@ -17,7 +13,6 @@ const DishList = ({ dishes }) => {
         <div
           key={dish.id}
           className="dish-card"
-          onClick={() => handleDishClick(dish.id)}
         >
           {/* Dish Image */}
           <div className="dish-image-container">
@@ -126,6 +121,16 @@ const DishList = ({ dishes }) => {
                 <small>👤 {t('submitted_by', { user: dish.submitted_id.username })}</small>
               </div>
             )}
+
+            {/* Action Buttons */}
+            <div className="dish-actions">
+              <button
+                className="btn-view-details"
+                onClick={() => navigate(`/dishes/${dish.id}`)}
+              >
+                {t('viewDetails')}
+              </button>
+            </div>
           </div>
         </div>
       ))}

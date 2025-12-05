@@ -1,0 +1,54 @@
+{
+  "eyebrow": "AI giới thiệu món",
+  "title": "Giới thiệu món ăn",
+  "subtitle": "Nhập bối cảnh hoặc người nghe, AI sẽ gợi ý đoạn văn tiếng Nhật & tiếng Việt.",
+  "contextLabel": "Giới thiệu trong bối cảnh nào?",
+  "contextPlaceholder": "Ví dụ: Trình bày món phở trong buổi thuyết trình với thầy người Nhật...",
+  "generateButton": "AI tạo giới thiệu",
+  "generating": "Đang tạo...",
+  "defaultDishTitle": "AI giới thiệu",
+  "resultsHeader": "Gợi ý mới nhất",
+  "resultCount": "{{count}} kết quả",
+  "contextFallback": "Giới thiệu món ăn",
+  "language": {
+    "ja": "Tiếng Nhật",
+    "vi": "Tiếng Việt"
+  },
+  "actions": {
+    "copyJa": "Sao chép",
+    "copyVi": "Sao chép",
+    "copyCard": "Sao chép",
+    "copySuccess": "Đã sao chép thành công!"
+  },
+  "audioFallback": "Trình duyệt không hỗ trợ audio.",
+  "tone": {
+    "default": {
+      "primary": "AI",
+      "chips": ["#AI"]
+    },
+    "formal": {
+      "primary": "フォーマル",
+      "chips": ["#ビジネス", "#フォーマル"]
+    },
+    "casual": {
+      "primary": "カジュアル",
+      "chips": ["#友達", "#カジュアル"]
+    },
+    "homestay": {
+      "primary": "ホームステイ",
+      "chips": ["#家庭的", "#温かい"]
+    },
+    "presentation": {
+      "primary": "発表練習",
+      "chips": ["#学校", "#発表"]
+    }
+  },
+  "errors": {
+    "dishMissing": "Không tìm thấy thông tin món ăn.",
+    "contextMissing": "Vui lòng nhập bối cảnh hoặc mô tả.",
+    "needLogin": "Bạn cần đăng nhập để sử dụng AI.",
+    "generic": "Đã có lỗi xảy ra. Vui lòng thử lại."
+  }
+}
+
+

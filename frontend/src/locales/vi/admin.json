@@ -50,6 +50,10 @@
     "of": "của",
     "itemsPerPage": "mục mỗi trang",
     "reviewedBy": "Người duyệt",
-    "reviewedAt": "Ngày duyệt"
+    "reviewedAt": "Ngày duyệt",
+    "delete": "Xóa món ăn",
+    "confirmDelete": "Bạn có chắc muốn xóa món ăn này?",
+    "deleteSuccess": "Xóa món ăn thành công",
+    "deleteFailed": "Xóa món ăn thất bại"
   }
 }

@@ -9,6 +9,7 @@ export class DishResponseDto {
   description_vietnamese?: string;
   description_romaji?: string;
 
+  status?: string;
   submitted_id: {
     username: string;
   };

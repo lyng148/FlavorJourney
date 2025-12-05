@@ -1,10 +1,10 @@
-import { useState } from "react";
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import Login from "./pages/LoginRegister/Login";
 import Register from "./pages/LoginRegister/Register";
@@ -19,14 +19,42 @@ import "./App.css";
 import Sidebar from "./components/sidebar/sidebar";
 import Favorites from "./pages/Favorites/Favorites";
 import Profile from "./pages/Profile/Profile";
+import MySubmissions from "./pages/MySubmissions/MySubmissions";
 
 // ============= SHARED COMPONENTS =============
 
 // Layout wrapper với sidebar
-function AppLayout({ children, active, onNavigate, onLogout }) {
+function AppLayout({ children, active }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const handleNavigate = (id) => {
+    const routes = {
+      home: "/home",
+      search: "/search",
+      register: "/register-dish",
+      favorites: "/favorites",
+      profile: "/profile",
+      dishApproval: "/dish-approval",
+    };
+
+    if (routes[id]) {
+      navigate(routes[id]);
+    }
+  };
+
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar active={active} onNavigate={onNavigate} onLogout={onLogout} />
+      <Sidebar
+        active={active}
+        onNavigate={handleNavigate}
+        onLogout={handleLogout}
+      />
       <main
         style={{
           flex: 1,
@@ -40,111 +68,16 @@ function AppLayout({ children, active, onNavigate, onLogout }) {
   );
 }
 
-// ============= USER HOME =============
+// ============= PROTECTED ROUTE =============
 
-function UserHome() {
-  const navigate = useNavigate();
-  const [active, setActive] = useState("home");
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
-  const renderContent = () => {
-    switch (active) {
-      case "dishApproval":
-        return <DishApproval />;
-      case "search":
-        return <Search />;
-      case "register":
-        return <RegisterDish />;
-      case "favorites":
-        return <Favorites />;
-      case "profile":
-        return <Profile />;
-      case "home":
-      default:
-        return <Home />;
-    }
-  };
-
-  return (
-    <AppLayout
-      active={active}
-      onNavigate={(id) => setActive(id)}
-      onLogout={handleLogout}
-    >
-      {renderContent()}
-    </AppLayout>
-  );
-}
-
-// ============= ADMIN HOME =============
-
-function AdminHome() {
-  const navigate = useNavigate();
-  const [active, setActive] = useState("home");
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
-  const renderContent = () => {
-    switch (active) {
-      case "dishApproval":
-        return <DishApproval />;
-      case "search":
-        return <Search />;
-      case "register":
-        return <RegisterDish />;
-      case "favorites":
-        return (
-          <>
-            <h1>お気に入り</h1>
-            <p>あなたのお気に入りを表示します。（デモ）</p>
-          </>
-        );
-      case "profile":
-        return (
-          <>
-            <h1>プロフィール</h1>
-            <p>プロフィール情報を編集します。（デモ）</p>
-          </>
-        );
-      case "home":
-      default:
-        return <Home />;
-    }
-  };
-
-  return (
-    <AppLayout
-      active={active}
-      onNavigate={(id) => setActive(id)}
-      onLogout={handleLogout}
-    >
-      {renderContent()}
-    </AppLayout>
-  );
-}
-
-// ============= ROUTE COMPONENTS =============
-
-// Home route selector - chọn UserHome hoặc AdminHome
-function HomeRouter() {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+function ProtectedRoute({ children }) {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // Admin thì hiển thị AdminHome, user thường hiển thị UserHome
-  return user.role === "admin" ? <AdminHome /> : <UserHome />;
+  return children;
 }
 
 // Protected admin route
@@ -157,62 +90,10 @@ function AdminProtectedRoute({ children }) {
   }
 
   if (user.role !== "admin") {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return children;
-}
-
-// Layout cho admin detail pages
-function AdminDetailLayout({ children }) {
-  const navigate = useNavigate();
-  const active = "dishApproval";
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
-  return (
-    <AppLayout
-      active={active}
-      onNavigate={(id) => {
-        if (id === "dishApproval") {
-          navigate("/");
-        } else {
-          navigate("/");
-        }
-      }}
-      onLogout={handleLogout}
-    >
-      {children}
-    </AppLayout>
-  );
-}
-
-// Layout cho user detail pages
-function DetailLayout({ children }) {
-  const navigate = useNavigate();
-  const active = "home";
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
-  return (
-    <AppLayout
-      active={active}
-      onNavigate={(id) => {
-        navigate("/");
-      }}
-      onLogout={handleLogout}
-    >
-      {children}
-    </AppLayout>
-  );
 }
 
 // ============= MAIN APP =============
@@ -225,38 +106,115 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route 
-          path="/change-password" 
-          element={
-            <DetailLayout>
-              <ChangePassword />
-            </DetailLayout>
-          } 
-        />
 
-        {/* ===== SHARED HOME ROUTE (USER + ADMIN) ===== */}
-        <Route path="/" element={<HomeRouter />} />
-
+        {/* ===== PROTECTED USER ROUTES ===== */}
         <Route
-          path="/dishes/:dishId"
+          path="/home"
           element={
-            <DetailLayout>
-              <DishDetail />
-            </DetailLayout>
+            <ProtectedRoute>
+              <AppLayout active="home">
+                <Home />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <AppLayout active="search">
+                <Search />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/register-dish"
+          element={
+            <ProtectedRoute>
+              <AppLayout active="register">
+                <RegisterDish />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <AppLayout active="favorites">
+                <Favorites />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <AppLayout active="profile">
+                <Profile />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-submissions"
+          element={
+            <ProtectedRoute>
+              <AppLayout active="mySubmissions">
+                <MySubmissions />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <AppLayout active="profile">
+                <ChangePassword />
+              </AppLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* ===== ADMIN-ONLY ROUTES ===== */}
+        {/* ===== ADMIN ROUTES ===== */}
+        <Route
+          path="/dish-approval"
+          element={
+            <AdminProtectedRoute>
+              <AppLayout active="dishApproval">
+                <DishApproval />
+              </AppLayout>
+            </AdminProtectedRoute>
+          }
+        />
+
+        {/* ===== DISH DETAIL ROUTES ===== */}
+        <Route
+          path="/dishes/:dishId"
+          element={
+            <ProtectedRoute>
+              <AppLayout active="home">
+                <DishDetail />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin/dishes/:dishId"
           element={
             <AdminProtectedRoute>
-              <AdminDetailLayout>
+              <AppLayout active="dishApproval">
                 <DishDetail />
-              </AdminDetailLayout>
+              </AppLayout>
             </AdminProtectedRoute>
           }
         />
+
+        {/* ===== DEFAULT REDIRECT ===== */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
       </Routes>
     </BrowserRouter>
   );

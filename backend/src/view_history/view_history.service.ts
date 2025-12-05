@@ -7,6 +7,7 @@ import {
   ViewHistoryItemDto,
 } from './dtos/view-history.response.dto';
 import { I18nService } from 'nestjs-i18n';
+import { DishStatus } from '@prisma/client';
 
 @Injectable()
 export class ViewHistoryService {
@@ -33,7 +34,12 @@ export class ViewHistoryService {
 
     if (!dish) {
       throw new NotFoundException(
-        await this.i18n.t('view_history.errors.dish_not_found'),
+        this.i18n.t('view_history.errors.dish_not_found'),
+      );
+    }
+    if (dish.status !== DishStatus.approved) {
+      throw new NotFoundException(
+        this.i18n.t('view_history.errors.dish_not_found'),
       );
     }
 

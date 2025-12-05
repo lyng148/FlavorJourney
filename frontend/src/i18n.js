@@ -25,6 +25,12 @@ import jpProfile from "./locales/jp/profile.json";
 import viChangePassword from "./locales/vi/change_password.json";
 import jpChangePassword from "./locales/jp/change_password.json";
 
+import viAiGenerator from "./locales/vi/ai_generator.json";
+import jpAiGenerator from "./locales/jp/ai_generator.json";
+
+import viMySubmissions from "./locales/vi/mySubmissions.json";
+import jpMySubmissions from "./locales/jp/mySubmissions.json";
+
 const stored =
   typeof window !== "undefined" ? localStorage.getItem("lang") : null;
 const initialLng = stored || "vi";
@@ -44,6 +50,8 @@ i18n.use(initReactI18next).init({
     "search",
     "profile",
     "change_password",
+    "ai_generator",
+    "mySubmissions",
   ],
 
   resources: {
@@ -56,6 +64,8 @@ i18n.use(initReactI18next).init({
       search: viSearch,
       profile: viProfile,
       change_password: viChangePassword,
+      ai_generator: viAiGenerator,
+      mySubmissions: viMySubmissions,
     },
     jp: {
       homepage: jpHomepage,
@@ -66,6 +76,8 @@ i18n.use(initReactI18next).init({
       search: jpSearch,
       profile: jpProfile,
       change_password: jpChangePassword,
+      ai_generator: jpAiGenerator,
+      mySubmissions: jpMySubmissions,
     },
   },
 
@@ -73,5 +85,6 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
 });
+
 
 export default i18n;

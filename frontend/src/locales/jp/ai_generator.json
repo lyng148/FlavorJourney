@@ -1,0 +1,54 @@
+{
+  "eyebrow": "AI紹介文ジェネレーター",
+  "title": "料理紹介を作る",
+  "subtitle": "場面や相手を入力すると、AIが日本語とベトナム語で紹介文を考えます。",
+  "contextLabel": "紹介する場面や相手を教えてください",
+  "contextPlaceholder": "例: 日本人の先生にフォーを紹介するプレゼンで使いたい...",
+  "generateButton": "AIで紹介文を生成",
+  "generating": "生成中...",
+  "defaultDishTitle": "AI紹介",
+  "resultsHeader": "おすすめの紹介文",
+  "resultCount": "{{count}}件",
+  "contextFallback": "紹介のシーン",
+  "language": {
+    "ja": "日本語",
+    "vi": "ベトナム語"
+  },
+  "actions": {
+    "copyJa": "コピー",
+    "copyVi": "コピー",
+    "copyCard": "コピー",
+    "copySuccess": "コピーしました！"
+  },
+  "audioFallback": "ブラウザがオーディオ再生に対応していません。",
+  "tone": {
+    "default": {
+      "primary": "AI",
+      "chips": ["#AI"]
+    },
+    "formal": {
+      "primary": "フォーマル",
+      "chips": ["#ビジネス", "#フォーマル"]
+    },
+    "casual": {
+      "primary": "カジュアル",
+      "chips": ["#友達", "#カジュアル"]
+    },
+    "homestay": {
+      "primary": "ホームステイ",
+      "chips": ["#家庭的", "#温かい"]
+    },
+    "presentation": {
+      "primary": "発表練習",
+      "chips": ["#学校", "#発表"]
+    }
+  },
+  "errors": {
+    "dishMissing": "料理情報が見つかりません。",
+    "contextMissing": "シーンや相手を入力してください。",
+    "needLogin": "AI機能を使うにはログインが必要です。",
+    "generic": "エラーが発生しました。もう一度お試しください。"
+  }
+}
+
+

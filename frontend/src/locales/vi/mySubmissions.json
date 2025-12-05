@@ -1,0 +1,15 @@
+{
+  "title": "Món ăn đã đăng ký",
+  "subtitle": "Xem và quản lý các món ăn bạn đã đăng ký",
+  "overview": "Tổng quan",
+  "submissionsList": "Danh sách món ăn",
+  "totalSubmissions": "Tổng số món",
+  "approved": "Đã duyệt",
+  "pending": "Chờ duyệt",
+  "rejected": "Đã từ chối",
+  "submittedAt": "Ngày gửi",
+  "rejectionReason": "Lý do từ chối",
+  "noSubmissions": "Bạn chưa đăng ký món ăn nào",
+  "loading": "Đang tải...",
+  "error": "Đã xảy ra lỗi"
+}

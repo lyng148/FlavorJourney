@@ -50,6 +50,10 @@
     "of": "の",
     "itemsPerPage": "項目/ページ",
     "reviewedBy": "承認者",
-    "reviewedAt": "承認日"
+    "reviewedAt": "承認日",
+    "delete": "料理を削除",
+    "confirmDelete": "この料理を削除してもよろしいですか？",
+    "deleteSuccess": "料理を削除しました",
+    "deleteFailed": "料理の削除に失敗しました"
   }
 }

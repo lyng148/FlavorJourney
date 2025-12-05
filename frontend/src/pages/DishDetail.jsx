@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AIIntroGenerator from "./ai-generator/AIIntroGenerator";
 import "./DishDetail.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
@@ -14,12 +17,16 @@ function DishDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const viewHistorySaved = useRef(false);
 
   const currentLang = i18n.language;
-  
+
   // Check if user is admin
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isAdmin = user.role === "admin";
@@ -54,6 +61,23 @@ function DishDetail() {
         const data = await response.json();
         setDish(data);
 
+        // Save view history once after fetching dish successfully
+        if (!viewHistorySaved.current && data?.id) {
+          viewHistorySaved.current = true;
+          try {
+            await fetch(`${API_URL}/view-history`, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ dish_id: Number(data.id) }),
+            });
+          } catch (err) {
+            console.error("Failed to save view history", err);
+          }
+        }
+
         // Check favorite state
         try {
           const lang = localStorage.getItem("lang") || i18n.language || "vi";
@@ -81,11 +105,15 @@ function DishDetail() {
     fetchDishDetail();
   }, [dishId, navigate, t]);
 
-  const handleApprove = async () => {
-    if (!window.confirm(t("dishApproval.confirmApprove"))) {
-      return;
-    }
+  const handleApproveClick = () => {
+    setShowApproveModal(true);
+  };
 
+  const handleApproveCancel = () => {
+    setShowApproveModal(false);
+  };
+
+  const handleApproveConfirm = async () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(`${API_URL}/dishes/${dishId}`, {
@@ -101,11 +129,12 @@ function DishDetail() {
         throw new Error("Failed to approve dish");
       }
 
-      alert(t("dishApproval.approveSuccess"));
+      toast.success(t("dishApproval.approveSuccess"));
+      setShowApproveModal(false);
       navigate("/");
     } catch (err) {
       console.error("Error approving dish:", err);
-      alert(t("dishApproval.approveFailed"));
+      toast.error(t("dishApproval.approveFailed"));
     }
   };
 
@@ -115,7 +144,7 @@ function DishDetail() {
 
   const handleRejectConfirm = async () => {
     if (!rejectionReason.trim()) {
-      alert(t("dishApproval.enterRejectionReason"));
+      toast.error(t("dishApproval.enterRejectionReason"));
       return;
     }
 
@@ -137,17 +166,54 @@ function DishDetail() {
         throw new Error("Failed to reject dish");
       }
 
-      alert(t("dishApproval.rejectSuccess"));
+      toast.success(t("dishApproval.rejectSuccess"));
+      setShowRejectModal(false);
+      setRejectionReason("");
       navigate("/");
     } catch (err) {
       console.error("Error rejecting dish:", err);
-      alert(t("dishApproval.rejectFailed"));
+      toast.error(t("dishApproval.rejectFailed"));
     }
   };
 
   const handleRejectCancel = () => {
     setShowRejectModal(false);
     setRejectionReason("");
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      setDeleteLoading(true);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`${API_URL}/dishes/${dishId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete dish");
+      }
+
+      toast.success(t("dishApproval.deleteSuccess"));
+      setShowDeleteModal(false);
+      navigate("/");
+    } catch (err) {
+      console.error("Error deleting dish:", err);
+      toast.error(t("dishApproval.deleteFailed"));
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const handleToggleFavorite = async () => {
@@ -219,15 +285,54 @@ function DishDetail() {
     return region.name_vietnamese || region.name_japanese;
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    return date.toLocaleString(currentLang === "jp" ? "ja-JP" : "vi-VN");
+  const getSpiceLevelText = (level) => {
+    if (!level || level === 0)
+      return currentLang === "jp" ? "辛くない" : "Không cay";
+    if (level <= 1) return currentLang === "jp" ? "少し辛い" : "Hơi cay";
+    if (level <= 2) return currentLang === "jp" ? "少し辛い" : "Hơi cay";
+    if (level <= 3) return currentLang === "jp" ? "中辛" : "Vừa cay";
+    return currentLang === "jp" ? "とても辛い" : "Rất cay";
   };
 
-  const getTasteLevelWidth = (level) => {
-    if (!level) return "0%";
-    return `${(level / 5) * 100}%`;
+  const getSaltinessLevelText = (level) => {
+    if (!level || level === 0)
+      return currentLang === "jp" ? "塩辛くない" : "Không mặn";
+    if (level <= 1) return currentLang === "jp" ? "少し塩辛い" : "Hơi mặn";
+    if (level <= 2) return currentLang === "jp" ? "少し塩辛い" : "Hơi mặn";
+    if (level <= 3) return currentLang === "jp" ? "中塩" : "Vừa mặn";
+    return currentLang === "jp" ? "とても塩辛い" : "Rất mặn";
+  };
+
+  const getSweetnessLevelText = (level) => {
+    if (!level || level === 0)
+      return currentLang === "jp" ? "甘くない" : "Không ngọt";
+    if (level <= 1) return currentLang === "jp" ? "少し甘い" : "Hơi ngọt";
+    if (level <= 2) return currentLang === "jp" ? "少し甘い" : "Hơi ngọt";
+    if (level <= 3) return currentLang === "jp" ? "中甘" : "Vừa ngọt";
+    return currentLang === "jp" ? "とても甘い" : "Rất ngọt";
+  };
+
+  const getSournessLevelText = (level) => {
+    if (!level || level === 0)
+      return currentLang === "jp" ? "酸っぱくない" : "Không chua";
+    if (level <= 1) return currentLang === "jp" ? "少し酸っぱい" : "Hơi chua";
+    if (level <= 2) return currentLang === "jp" ? "少し酸っぱい" : "Hơi chua";
+    if (level <= 3) return currentLang === "jp" ? "中酸" : "Vừa chua";
+    return currentLang === "jp" ? "とても酸っぱい" : "Rất chua";
+  };
+
+  const getStars = (level) => {
+    const filled = level || 0;
+    const empty = 5 - filled;
+    return "★".repeat(filled) + "☆".repeat(empty);
+  };
+
+  const parseIngredients = (ingredients) => {
+    if (!ingredients) return [];
+    return ingredients
+      .split(/[,;\n]/)
+      .map((ing) => ing.trim())
+      .filter((ing) => ing.length > 0);
   };
 
   if (loading) {
@@ -253,221 +358,268 @@ function DishDetail() {
     ? tf("removeFromFavorites")
     : tf("addToFavorites");
 
+  const ingredientsList = parseIngredients(dish.ingredients);
+
   return (
     <div className="dish-detail-page">
+      {/* Back Button Header */}
       <div className="dish-detail-header">
-        <h1>{t("dishApproval.dishDetails")}</h1>
-        <div>
-          <button
-            className="btn-secondary"
-            disabled={favLoading}
-            onClick={handleToggleFavorite}
-            style={{ marginRight: 8 }}
-          >
-            {favLabel}
-          </button>
-          <button className="btn-back" onClick={() => navigate("/")}>
-            {t("dishApproval.back")}
-          </button>
-        </div>
-      </div>
-
-      <div className="dish-detail-container">
+        <button className="btn-back-to-search" onClick={() => navigate("/")}>
+          <span className="back-arrow">←</span>
+          <span>
+            {currentLang === "jp" ? "ホームに戻る" : "Quay lại trang chủ"}
+          </span>
+        </button>
         {isAdmin && (
-          <div className="dish-status-section">
-            <span className="info-label">{t("dishApproval.status")}:</span>
+          <div className="admin-status-badge">
             <span className={`status-badge ${dish.status || "pending"}`}>
               {t(`dishApproval.${dish.status || "pending"}`)}
             </span>
           </div>
         )}
+      </div>
 
-        <div className="dish-content">
-          <div className="dish-image-section">
-            {dish.image_url ? (
-              <img
-                src={dish.image_url}
-                alt={getDishName(dish)}
-                className="dish-detail-image"
-              />
-            ) : (
-              <div className="no-image">{t("dishApproval.image")}</div>
+      <div className="dish-detail-layout">
+        {/* LEFT COLUMN - Dish Info */}
+        <div className="dish-detail-main">
+          <div className="dish-info-wrapper">
+            {/* Dish Image Card */}
+            <div className="dish-section-card">
+              <div className="dish-image-large">
+                {dish.image_url ? (
+                  <img
+                    src={dish.image_url}
+                    alt={getDishName(dish)}
+                    className="dish-main-image"
+                  />
+                ) : (
+                  <div className="no-image-large">
+                    <span>{t("dishApproval.image")}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="dish-section-card">
+              <div className="dish-title-section">
+                <h1 className="dish-name-primary">{getDishName(dish)}</h1>
+                {(currentLang === "jp"
+                  ? dish.name_vietnamese
+                  : dish.name_japanese) && (
+                  <h2 className="dish-name-secondary">
+                    {currentLang === "jp"
+                      ? dish.name_vietnamese
+                      : dish.name_japanese}
+                  </h2>
+                )}
+              </div>
+
+              {getDescription(dish) && (
+                <div
+                  className="dish-description-content"
+                  style={{ marginTop: 8 }}
+                >
+                  <p>{getDescription(dish)}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Region + Category Card */}
+            {(dish.region || dish.category) && (
+              <div className="dish-section-card">
+                <div className="dish-chips-grid">
+                  {dish.region && (
+                    <div className="dish-meta-card">
+                      <span className="meta-label">
+                        {currentLang === "jp" ? "地域" : "Khu vực"}
+                      </span>
+                      <span className="chip chip-orange">
+                        {getRegionName(dish.region)}
+                      </span>
+                    </div>
+                  )}
+
+                  {dish.category && (
+                    <div className="dish-meta-card">
+                      <span className="meta-label">
+                        {currentLang === "jp" ? "カテゴリー" : "Danh mục"}
+                      </span>
+                      <span className="chip chip-blue">
+                        {getCategoryName(dish.category)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Taste Levels Card */}
+            {(dish.spiciness_level !== null &&
+              dish.spiciness_level !== undefined) ||
+            (dish.saltiness_level !== null &&
+              dish.saltiness_level !== undefined) ||
+            (dish.sweetness_level !== null &&
+              dish.sweetness_level !== undefined) ||
+            (dish.sourness_level !== null &&
+              dish.sourness_level !== undefined) ? (
+              <div className="dish-section-card">
+                <div className="taste-levels-grid">
+                  {dish.spiciness_level !== null &&
+                    dish.spiciness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "辛さ" : "Độ cay"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSpiceLevelText(dish.spiciness_level)}{" "}
+                          {getStars(dish.spiciness_level)}
+                        </span>
+                      </div>
+                    )}
+
+                  {dish.saltiness_level !== null &&
+                    dish.saltiness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "塩味" : "Độ mặn"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSaltinessLevelText(dish.saltiness_level)}{" "}
+                          {getStars(dish.saltiness_level)}
+                        </span>
+                      </div>
+                    )}
+
+                  {dish.sweetness_level !== null &&
+                    dish.sweetness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "甘さ" : "Độ ngọt"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSweetnessLevelText(dish.sweetness_level)}{" "}
+                          {getStars(dish.sweetness_level)}
+                        </span>
+                      </div>
+                    )}
+
+                  {dish.sourness_level !== null &&
+                    dish.sourness_level !== undefined && (
+                      <div className="taste-level-item">
+                        <span className="taste-label">
+                          {currentLang === "jp" ? "酸味" : "Độ chua"}
+                        </span>
+                        <span className="taste-badge">
+                          {getSournessLevelText(dish.sourness_level)}{" "}
+                          {getStars(dish.sourness_level)}
+                        </span>
+                      </div>
+                    )}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Ingredients Card */}
+            {ingredientsList.length > 0 && (
+              <div className="dish-section-card">
+                <div className="ingredients-section">
+                  <span className="ingredients-label">
+                    {currentLang === "jp" ? "主な材料" : "Nguyên liệu chính"}
+                  </span>
+                  <div className="ingredients-tags">
+                    {ingredientsList.map((ingredient, index) => (
+                      <span key={index} className="ingredient-tag">
+                        {ingredient}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Favorite Button Card */}
+            {!isAdmin && (
+              <div className="dish-section-card">
+                <button
+                  className={`btn-favorite ${isFavorite ? "active" : ""}`}
+                  disabled={favLoading}
+                  onClick={handleToggleFavorite}
+                >
+                  <span className="favorite-icon">
+                    {isFavorite ? "❤" : "♡"}
+                  </span>
+                  <span>{favLabel}</span>
+                </button>
+              </div>
+            )}
+
+            {/* Admin Actions */}
+            {isAdmin && dish.status === "pending" && (
+              <div className="dish-section-card">
+                <div className="approval-actions">
+                  <button
+                    className="btn btn-reject"
+                    onClick={handleRejectClick}
+                  >
+                    {t("dishApproval.reject")}
+                  </button>
+                  <button className="btn btn-approve" onClick={handleApproveClick}>
+                    {t("dishApproval.approve")}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Admin Delete Button */}
+            {isAdmin && (
+              <div className="dish-section-card">
+                <button
+                  className="btn btn-delete"
+                  onClick={handleDeleteClick}
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? t("dishApproval.loading") : t("dishApproval.delete")}
+                </button>
+              </div>
+            )}
+
+            {/* Rejection Reason (Admin only) */}
+            {isAdmin && dish.status === "rejected" && dish.rejection_reason && (
+              <div className="dish-section-card">
+                <div className="rejection-section">
+                  <div className="info-group">
+                    <span className="info-label">
+                      {t("dishApproval.rejectionReason")}
+                    </span>
+                    <span className="info-value">{dish.rejection_reason}</span>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
-
-          <div className="dish-info-section">
-            <div className="info-group">
-              <span className="info-label">
-                {t("dishApproval.nameJapanese")}
-              </span>
-              <span className="info-value">{dish.name_japanese || "-"}</span>
-            </div>
-
-            <div className="info-group">
-              <span className="info-label">
-                {t("dishApproval.nameVietnamese")}
-              </span>
-              <span className="info-value">{dish.name_vietnamese || "-"}</span>
-            </div>
-
-            <div className="info-group">
-              <span className="info-label">{t("dishApproval.nameRomaji")}</span>
-              <span className="info-value">{dish.name_romaji || "-"}</span>
-            </div>
-
-            <div className="info-group">
-              <span className="info-label">{t("dishApproval.category")}</span>
-              <span className="info-value">
-                {getCategoryName(dish.category)}
-              </span>
-            </div>
-
-            <div className="info-group">
-              <span className="info-label">{t("dishApproval.region")}</span>
-              <span className="info-value">{getRegionName(dish.region)}</span>
-            </div>
-
-            <div className="info-group">
-              <span className="info-label">
-                {t("dishApproval.submittedBy")}
-              </span>
-              <span className="info-value">
-                {dish.submitted_id?.username || "-"}
-              </span>
-            </div>
-
-            <div className="info-group">
-              <span className="info-label">
-                {t("dishApproval.submittedAt")}
-              </span>
-              <span className="info-value">
-                {formatDate(dish.submitted_at)}
-              </span>
-            </div>
-          </div>
         </div>
 
-        <div className="dish-info-section" style={{ marginTop: "2rem" }}>
-          <div className="info-group">
-            <span className="info-label">
-              {currentLang === "jp"
-                ? t("dishApproval.descriptionJapanese")
-                : t("dishApproval.descriptionVietnamese")}
-            </span>
-            <span className="info-value">
-              {getDescription(dish) || <span className="empty">-</span>}
-            </span>
-          </div>
-
-          <div className="info-group">
-            <span className="info-label">{t("dishApproval.ingredients")}</span>
-            <span className="info-value">
-              {dish.ingredients || <span className="empty">-</span>}
-            </span>
-          </div>
-
-          <div className="info-group">
-            <span className="info-label">{t("dishApproval.howToEat")}</span>
-            <span className="info-value">
-              {dish.how_to_eat || <span className="empty">-</span>}
-            </span>
-          </div>
-
-          <div className="info-group">
-            <span className="info-label">
-              {currentLang === "jp" ? "味レベル" : "Mức độ hương vị"}
-            </span>
-            <div className="taste-levels">
-              <div className="taste-item">
-                <span>{t("dishApproval.spiciness")}</span>
-                <div className="taste-level-bar">
-                  <div
-                    className="taste-level-fill"
-                    style={{ width: getTasteLevelWidth(dish.spiciness_level) }}
-                  />
-                </div>
-                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                  {dish.spiciness_level || 0}/5
-                </span>
-              </div>
-
-              <div className="taste-item">
-                <span>{t("dishApproval.saltiness")}</span>
-                <div className="taste-level-bar">
-                  <div
-                    className="taste-level-fill"
-                    style={{ width: getTasteLevelWidth(dish.saltiness_level) }}
-                  />
-                </div>
-                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                  {dish.saltiness_level || 0}/5
-                </span>
-              </div>
-
-              <div className="taste-item">
-                <span>{t("dishApproval.sweetness")}</span>
-                <div className="taste-level-bar">
-                  <div
-                    className="taste-level-fill"
-                    style={{ width: getTasteLevelWidth(dish.sweetness_level) }}
-                  />
-                </div>
-                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                  {dish.sweetness_level || 0}/5
-                </span>
-              </div>
-
-              <div className="taste-item">
-                <span>{t("dishApproval.sourness")}</span>
-                <div className="taste-level-bar">
-                  <div
-                    className="taste-level-fill"
-                    style={{ width: getTasteLevelWidth(dish.sourness_level) }}
-                  />
-                </div>
-                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                  {dish.sourness_level || 0}/5
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {dish.status === "rejected" && dish.rejection_reason && (
-            <div className="rejection-section">
-              <div className="info-group">
-                <span className="info-label">
-                  {t("dishApproval.rejectionReason")}
-                </span>
-                <span className="info-value">{dish.rejection_reason}</span>
-              </div>
-            </div>
-          )}
-
-          {dish.reviewed_by && (
-            <>
-              <div className="info-group">
-                <span className="info-label">
-                  {t("dishApproval.reviewedAt")}
-                </span>
-                <span className="info-value">
-                  {formatDate(dish.reviewed_at)}
-                </span>
-              </div>
-            </>
-          )}
+        {/* RIGHT COLUMN - AI Generator */}
+        <div className="ai-panel-wrapper">
+          <AIIntroGenerator dish={dish} />
         </div>
-
-        {dish.status === "pending" && (
-          <div className="approval-actions">
-            <button className="btn btn-reject" onClick={handleRejectClick}>
-              {t("dishApproval.reject")}
-            </button>
-            <button className="btn btn-approve" onClick={handleApprove}>
-              {t("dishApproval.approve")}
-            </button>
-          </div>
-        )}
       </div>
+
+      {showApproveModal && (
+        <div className="modal-overlay" onClick={handleApproveCancel}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{t("dishApproval.confirmApprove")}</h3>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={handleApproveCancel}>
+                {t("dishApproval.cancel")}
+              </button>
+              <button className="btn btn-approve" onClick={handleApproveConfirm}>
+                {t("dishApproval.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showRejectModal && (
         <div className="modal-overlay" onClick={handleRejectCancel}>
@@ -489,6 +641,35 @@ function DishDetail() {
           </div>
         </div>
       )}
+
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={handleDeleteCancel}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{t("dishApproval.confirmDelete")}</h3>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={handleDeleteCancel} disabled={deleteLoading}>
+                {t("dishApproval.cancel")}
+              </button>
+              <button className="btn btn-delete" onClick={handleDeleteConfirm} disabled={deleteLoading}>
+                {t("dishApproval.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

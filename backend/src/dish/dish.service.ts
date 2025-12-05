@@ -95,31 +95,20 @@ export class DishService {
       }),
     };
 
-    // ==== Map region names (code) and category names (slug) to IDs ====
-    const [regionIds, categoryIds] = await Promise.all([
-      query.region?.length
-        ? this.prisma.regions
-            .findMany({
-              where: { code: { in: query.region } },
-              select: { id: true },
-            })
-            .then((r) => r.map((item) => item.id))
-        : Promise.resolve(undefined),
-      query.category?.length
-        ? this.prisma.categories
-            .findMany({
-              where: { slug: { in: query.category } },
-              select: { id: true },
-            })
-            .then((c) => c.map((item) => item.id))
-        : Promise.resolve(undefined),
-    ]);
+    // ==== Convert region & category (string[]) → number[] ====
+    const regionIds = query.region?.length
+      ? query.region.map((id) => Number(id))
+      : undefined;
 
+    const categoryIds = query.category?.length
+      ? query.category.map((id) => Number(id))
+      : undefined;
+
+    // ==== Query dishes ====
     const dishes = await this.prisma.dishes.findMany({
       where: {
         status: 'approved',
 
-        // Full-text search JP + VI
         ...(query.search && {
           OR: [
             { name_japanese: { contains: query.search } },
@@ -127,8 +116,8 @@ export class DishService {
           ],
         }),
 
-        category_id: categoryIds ? { in: categoryIds } : undefined,
         region_id: regionIds ? { in: regionIds } : undefined,
+        category_id: categoryIds ? { in: categoryIds } : undefined,
 
         ...tasteWhere,
       },
@@ -145,9 +134,7 @@ export class DishService {
         category: true,
         region: true,
         users_dishes_submitted_byTousers: {
-          select: {
-            username: true,
-          },
+          select: { username: true },
         },
       },
     });
@@ -155,34 +142,33 @@ export class DishService {
     const total = await this.prisma.dishes.count({
       where: {
         status: 'approved',
-        OR: query.search
-          ? [
-              { name_japanese: { contains: query.search } },
-              { name_vietnamese: { contains: query.search } },
-            ]
-          : undefined,
-        category_id: categoryIds ? { in: categoryIds } : undefined,
+
+        ...(query.search && {
+          OR: [
+            { name_japanese: { contains: query.search } },
+            { name_vietnamese: { contains: query.search } },
+          ],
+        }),
+
         region_id: regionIds ? { in: regionIds } : undefined,
+        category_id: categoryIds ? { in: categoryIds } : undefined,
+
         ...tasteWhere,
       },
     });
+
     const data: DishResponseDto[] = dishes.map((d) => ({
       id: d.id,
-
       name_japanese: d.name_japanese,
       name_vietnamese: d.name_vietnamese,
       name_romaji: d.name_romaji ?? undefined,
-
       description_japanese: d.description_japanese ?? undefined,
       description_vietnamese: d.description_vietnamese ?? undefined,
       description_romaji: d.description_romaji ?? undefined,
-
       image_url: d.image_url ?? undefined,
-
       submitted_id: {
         username: d.users_dishes_submitted_byTousers.username,
       },
-
       category: d.category
         ? {
             id: d.category.id,
@@ -190,7 +176,6 @@ export class DishService {
             name_vietnamese: d.category.name_vietnamese,
           }
         : undefined,
-
       region: d.region
         ? {
             id: d.region.id,
@@ -198,17 +183,13 @@ export class DishService {
             name_vietnamese: d.region.name_vietnamese,
           }
         : undefined,
-
       spiciness_level: d.spiciness_level ?? undefined,
       saltiness_level: d.saltiness_level ?? undefined,
       sweetness_level: d.sweetness_level ?? undefined,
       sourness_level: d.sourness_level ?? undefined,
-
       ingredients: d.ingredients ?? '',
       how_to_eat: d.how_to_eat ?? '',
-
       view_count: d.view_count ?? 0,
-
       submitted_at: d.submitted_at ?? undefined,
       reviewed_at: d.reviewed_at ?? undefined,
     }));
@@ -457,6 +438,7 @@ export class DishService {
       name_japanese: d.name_japanese,
       name_vietnamese: d.name_vietnamese,
       name_romaji: d.name_romaji ?? undefined,
+      status: d.status ?? undefined,
       description_japanese: d.description_japanese ?? undefined,
       description_vietnamese: d.description_vietnamese ?? undefined,
       description_romaji: d.description_romaji ?? undefined,

@@ -230,7 +230,7 @@ async forgotPassword(forgotPasswordDto: ForgotPasswordDto, lang: string) {
     }
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200'; 
-    const resetUrl = `${clientUrl}/reset-password?token=${token}`;
+    const resetUrl = `${clientUrl}reset-password?token=${token}`;
 
     try {
       await this.mailerService.sendMail({

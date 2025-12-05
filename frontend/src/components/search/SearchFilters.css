@@ -61,10 +61,30 @@
   cursor: pointer;
 }
 
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+/* Meta and Taste Filter Container */
+.meta-taste-filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Left: Region and Category - Centered vertically */
+.meta-filters-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   gap: 18px;
+  flex: 1;
+}
+
+/* Right: Taste Levels - 2x2 Grid */
+.taste-filters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 18px;
+  min-width: 400px;
 }
 
 .filter-field {
@@ -165,5 +185,18 @@
   .reset-btn {
     width: 100%;
     text-align: center;
+  }
+
+  .meta-taste-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .meta-filters-left {
+    width: 100%;
+  }
+
+  .taste-filters-grid {
+    min-width: 100%;
   }
 }

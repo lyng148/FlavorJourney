@@ -1,5 +1,5 @@
 import { IsOptional, IsInt, Min, Max } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 
 export class ListDishesQueryDto {
   @IsOptional()
@@ -33,12 +33,26 @@ export class ListDishesQueryDto {
   // giữ các trường hiện tại
   @IsOptional()
   search?: string;
+
   @IsOptional()
-  category?: string[];
-  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null) return undefined;
+    if (Array.isArray(value)) return value;
+    return [value];
+  })
   region?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null) return undefined;
+    if (Array.isArray(value)) return value;
+    return [value];
+  })
+  category?: string[];
+
   @IsOptional()
   sort?: 'latest' | 'popular';
+
   @IsOptional()
   @IsInt()
   @Type(() => Number)

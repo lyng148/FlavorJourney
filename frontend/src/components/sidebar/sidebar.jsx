@@ -90,15 +90,23 @@ export default function Sidebar({ active = "home", onNavigate, onLogout }) {
             </svg>
           }
         />
-        <Item
-          id="favorites"
-          label={t("favorites")}
-          icon={
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-              <path d="M12.1 21.35 10 19.28C5.4 14.36 2 11.28 2 7.5 2 5 4 3 6.5 3 8.04 3 9.54 3.81 10.35 5.08 11.16 3.81 12.66 3 14.2 3 16.7 3 18.7 5 18.7 7.5c0 3.78-3.4 6.86-7.99 11.78l-1.61 2.07z" />
-            </svg>
-          }
-        />
+        {!isAdmin && (
+          <Item
+            id="favorites"
+            label={t("favorites")}
+            icon={
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="currentColor"
+              >
+                <path d="M12.1 21.35 10 19.28C5.4 14.36 2 11.28 2 7.5 2 5 4 3 6.5 3 8.04 3 9.54 3.81 10.35 5.08 11.16 3.81 12.66 3 14.2 3 16.7 3 18.7 5 18.7 7.5c0 3.78-3.4 6.86-7.99 11.78l-1.61 2.07z" />
+              </svg>
+            }
+          />
+        )}
+
         <Item
           id="profile"
           label={t("profile")}

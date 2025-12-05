@@ -7,7 +7,7 @@ function Home() {
   const { t, i18n } = useTranslation("homepage");
   const { t: tf } = useTranslation("favorites");
   const navigate = useNavigate();
-
+  const isAdmin = user.role === "admin";
   // Use i18n.language directly instead of local state
   const lang = i18n.language;
 
@@ -203,23 +203,26 @@ function Home() {
                 >
                   {t("viewDetails")}
                 </button>
-                <button
-                  onClick={() => handleToggleFavorite(dish.id)}
-                  title={
-                    favoriteIds.has(dish.id)
-                      ? tf("removeFromFavorites")
-                      : tf("addToFavorites")
-                  }
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer",
-                    fontSize: "18px",
-                    color: favoriteIds.has(dish.id) ? "#e74c3c" : "#999",
-                  }}
-                >
-                  {favoriteIds.has(dish.id) ? "❤" : "♡"}
-                </button>
+                {!isAdmin &&
+                  <button
+                    onClick={() => handleToggleFavorite(dish.id)}
+                    title={
+                      favoriteIds.has(dish.id)
+                        ? tf("removeFromFavorites")
+                        : tf("addToFavorites")
+                    }
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      cursor: "pointer",
+                      fontSize: "18px",
+                      color: favoriteIds.has(dish.id) ? "#e74c3c" : "#999",
+                    }}
+                  >
+                    {favoriteIds.has(dish.id) ? "❤" : "♡"}
+                  </button>
+                }
+
               </div>
             </div>
           ))}

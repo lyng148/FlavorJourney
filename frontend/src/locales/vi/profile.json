@@ -8,6 +8,13 @@
   "favorites": "Yêu thích",
   "consecutiveLogin": "Đăng nhập liên tục",
   "days": "ngày",
+  "mySubmissions": "Món ăn đã đăng ký",
+  "viewAll": "Xem tất cả",
+  "noSubmissions": "Bạn chưa đăng ký món ăn nào",
+  "totalSubmissions": "Tổng số món",
+  "approved": "Đã duyệt",
+  "pending": "Chờ duyệt",
+  "rejected": "Đã từ chối",
   "recentViewedDishes": "Món ăn đã xem gần đây",
   "noRecentDishes": "Chưa có món ăn nào được xem gần đây",
   "loading": "Đang tải...",
@@ -18,5 +25,6 @@
   "birthday": "Ngày sinh",
   "save": "Lưu",
   "cancel": "Hủy",
-  "editProfile": "Chỉnh sửa hồ sơ"
+  "editProfile": "Chỉnh sửa hồ sơ",
+  "changePassword": "Đổi mật khẩu"
 }

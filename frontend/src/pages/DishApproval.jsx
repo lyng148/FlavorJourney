@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./DishApproval.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
@@ -14,6 +16,10 @@ function DishApproval() {
   const [currentStatus, setCurrentStatus] = useState("pending");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedDishId, setSelectedDishId] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState("");
   const limit = 10;
 
   const currentLang = i18n.language;
@@ -29,7 +35,9 @@ function DishApproval() {
         return;
       }
 
-      const url = `${API_URL}/dishes/admin/dish-submissions?status=${currentStatus}&page=${page}&limit=${limit}`;
+      // Build URL - omit status parameter when fetching all dishes
+      const statusParam = currentStatus === "all" ? "" : `status=${currentStatus}&`;
+      const url = `${API_URL}/dishes/admin/dish-submissions?${statusParam}page=${page}&limit=${limit}`;
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -69,14 +77,22 @@ function DishApproval() {
     navigate(`/admin/dishes/${dishId}`);
   };
 
-  const handleApprove = async (dishId) => {
-    if (!window.confirm(t("dishApproval.confirmApprove"))) {
-      return;
-    }
+  const handleApproveClick = (dishId) => {
+    setSelectedDishId(dishId);
+    setShowApproveModal(true);
+  };
+
+  const handleApproveCancel = () => {
+    setShowApproveModal(false);
+    setSelectedDishId(null);
+  };
+
+  const handleApproveConfirm = async () => {
+    if (!selectedDishId) return;
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`${API_URL}/dishes/${dishId}`, {
+      const response = await fetch(`${API_URL}/dishes/${selectedDishId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -89,25 +105,38 @@ function DishApproval() {
         throw new Error("Failed to approve dish");
       }
 
-      alert(t("dishApproval.approveSuccess"));
+      toast.success(t("dishApproval.approveSuccess"));
+      setShowApproveModal(false);
+      setSelectedDishId(null);
       fetchDishes();
     } catch (err) {
       console.error("Error approving dish:", err);
-      alert(t("dishApproval.approveFailed"));
+      toast.error(t("dishApproval.approveFailed"));
     }
   };
 
-  const handleReject = async (dishId) => {
-    const reason = prompt(t("dishApproval.enterRejectionReason"));
-    if (!reason) return;
+  const handleRejectClick = (dishId) => {
+    setSelectedDishId(dishId);
+    setShowRejectModal(true);
+  };
 
-    if (!window.confirm(t("dishApproval.confirmReject"))) {
+  const handleRejectCancel = () => {
+    setShowRejectModal(false);
+    setSelectedDishId(null);
+    setRejectionReason("");
+  };
+
+  const handleRejectConfirm = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error(t("dishApproval.enterRejectionReason"));
       return;
     }
 
+    if (!selectedDishId) return;
+
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`${API_URL}/dishes/${dishId}`, {
+      const response = await fetch(`${API_URL}/dishes/${selectedDishId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -115,7 +144,7 @@ function DishApproval() {
         },
         body: JSON.stringify({
           status: "rejected",
-          rejection_reason: reason,
+          rejection_reason: rejectionReason.trim(),
         }),
       });
 
@@ -123,11 +152,14 @@ function DishApproval() {
         throw new Error("Failed to reject dish");
       }
 
-      alert(t("dishApproval.rejectSuccess"));
+      toast.success(t("dishApproval.rejectSuccess"));
+      setShowRejectModal(false);
+      setSelectedDishId(null);
+      setRejectionReason("");
       fetchDishes();
     } catch (err) {
       console.error("Error rejecting dish:", err);
-      alert(t("dishApproval.rejectFailed"));
+      toast.error(t("dishApproval.rejectFailed"));
     }
   };
 
@@ -174,25 +206,29 @@ function DishApproval() {
 
         <div className="status-tabs">
           <button
-            className={`status-tab ${
-              currentStatus === "pending" ? "active" : ""
-            }`}
+            className={`status-tab ${currentStatus === "all" ? "active" : ""
+              }`}
+            onClick={() => handleStatusChange("all")}
+          >
+            {t("dishApproval.allDishes")}
+          </button>
+          <button
+            className={`status-tab ${currentStatus === "pending" ? "active" : ""
+              }`}
             onClick={() => handleStatusChange("pending")}
           >
             {t("dishApproval.pendingList")}
           </button>
           <button
-            className={`status-tab ${
-              currentStatus === "approved" ? "active" : ""
-            }`}
+            className={`status-tab ${currentStatus === "approved" ? "active" : ""
+              }`}
             onClick={() => handleStatusChange("approved")}
           >
             {t("dishApproval.approvedList")}
           </button>
           <button
-            className={`status-tab ${
-              currentStatus === "rejected" ? "active" : ""
-            }`}
+            className={`status-tab ${currentStatus === "rejected" ? "active" : ""
+              }`}
             onClick={() => handleStatusChange("rejected")}
           >
             {t("dishApproval.rejectedList")}
@@ -269,13 +305,13 @@ function DishApproval() {
                           <>
                             <button
                               className="btn btn-approve"
-                              onClick={() => handleApprove(dish.id)}
+                              onClick={() => handleApproveClick(dish.id)}
                             >
                               {t("dishApproval.approve")}
                             </button>
                             <button
                               className="btn btn-reject"
-                              onClick={() => handleReject(dish.id)}
+                              onClick={() => handleRejectClick(dish.id)}
                             >
                               {t("dishApproval.reject")}
                             </button>
@@ -311,6 +347,56 @@ function DishApproval() {
           )}
         </>
       )}
+
+      {showApproveModal && (
+        <div className="modal-overlay" onClick={handleApproveCancel}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{t("dishApproval.confirmApprove")}</h3>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={handleApproveCancel}>
+                {t("dishApproval.cancel")}
+              </button>
+              <button className="btn btn-approve" onClick={handleApproveConfirm}>
+                {t("dishApproval.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRejectModal && (
+        <div className="modal-overlay" onClick={handleRejectCancel}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{t("dishApproval.rejectionReason")}</h3>
+            <textarea
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              placeholder={t("dishApproval.enterRejectionReason")}
+            />
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={handleRejectCancel}>
+                {t("dishApproval.cancel")}
+              </button>
+              <button className="btn btn-reject" onClick={handleRejectConfirm}>
+                {t("dishApproval.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

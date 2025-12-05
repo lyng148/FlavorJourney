@@ -9,11 +9,15 @@ export default function RegisterDish() {
   const [form, setForm] = useState({
     nameJp: "",
     nameVi: "",
-    description: "",
+    descriptionVi: "",
+    descriptionJp: "",
     region: "",
     category: "",
     ingredients: "",
     spiciness: 0,
+    saltiness: 0,
+    sweetness: 0,
+    sourness: 0,
     image: null
   });
   const [preview, setPreview] = useState("");
@@ -126,12 +130,15 @@ export default function RegisterDish() {
       const dishData = {
         name_japanese: form.nameJp,
         name_vietnamese: form.nameVi || form.nameJp,
-        description_vietnamese: form.description,
-        description_japanese: form.description,
+        description_vietnamese: form.descriptionVi || "",
+        description_japanese: form.descriptionJp || "",
         region_id: form.region ? Number(form.region) : null,
         category_id: form.category ? Number(form.category) : null,
         ingredients: form.ingredients || "",
         spiciness_level: Number(form.spiciness),
+        saltiness_level: Number(form.saltiness),
+        sweetness_level: Number(form.sweetness),
+        sourness_level: Number(form.sourness),
         image_url: imageUrl
       };
 
@@ -180,11 +187,15 @@ export default function RegisterDish() {
     setForm({
       nameJp: "",
       nameVi: "",
-      description: "",
+      descriptionVi: "",
+      descriptionJp: "",
       region: "",
       category: "",
       ingredients: "",
       spiciness: 0,
+      saltiness: 0,
+      sweetness: 0,
+      sourness: 0,
       image: null
     });
     setPreview("");
@@ -253,18 +264,33 @@ export default function RegisterDish() {
           </div>
         </div>
 
-        <div className="form-field">
-          <label htmlFor="description">{t("description_label")} *</label>
-          <textarea
-            id="description"
-            name="description"
-            rows={4}
-            placeholder={t("description_placeholder")}
-            value={form.description}
-            onChange={handleChange}
-            required
-            disabled={loading}
-          />
+        <div className="form-grid two-columns">
+          <div className="form-field">
+            <label htmlFor="descriptionVi">{t("description_vi_label")} *</label>
+            <textarea
+              id="descriptionVi"
+              name="descriptionVi"
+              rows={4}
+              placeholder={t("description_vi_placeholder")}
+              value={form.descriptionVi}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="descriptionJp">{t("description_jp_label")} *</label>
+            <textarea
+              id="descriptionJp"
+              name="descriptionJp"
+              rows={4}
+              placeholder={t("description_jp_placeholder")}
+              value={form.descriptionJp}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
+          </div>
         </div>
 
         <div className="form-grid two-columns">
@@ -332,21 +358,76 @@ export default function RegisterDish() {
           />
         </div>
 
-        <div className="form-field">
-          <label htmlFor="spiciness">
-            {t("spice_label")}: <strong>{form.spiciness}</strong>/5
-          </label>
-          <input
-            type="range"
-            id="spiciness"
-            name="spiciness"
-            min="0"
-            max="5"
-            step="1"
-            value={form.spiciness}
-            onChange={handleChange}
-            disabled={loading}
-          />
+        <div className="form-grid two-columns">
+          <div className="form-field">
+            <label htmlFor="spiciness">
+              {t("spice_label")}: <strong>{form.spiciness}</strong>/5
+            </label>
+            <input
+              type="range"
+              id="spiciness"
+              name="spiciness"
+              min="0"
+              max="5"
+              step="1"
+              value={form.spiciness}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="saltiness">
+              {t("saltiness_label")}: <strong>{form.saltiness}</strong>/5
+            </label>
+            <input
+              type="range"
+              id="saltiness"
+              name="saltiness"
+              min="0"
+              max="5"
+              step="1"
+              value={form.saltiness}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
+        </div>
+
+        <div className="form-grid two-columns">
+          <div className="form-field">
+            <label htmlFor="sweetness">
+              {t("sweetness_label")}: <strong>{form.sweetness}</strong>/5
+            </label>
+            <input
+              type="range"
+              id="sweetness"
+              name="sweetness"
+              min="0"
+              max="5"
+              step="1"
+              value={form.sweetness}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="sourness">
+              {t("sourness_label")}: <strong>{form.sourness}</strong>/5
+            </label>
+            <input
+              type="range"
+              id="sourness"
+              name="sourness"
+              min="0"
+              max="5"
+              step="1"
+              value={form.sourness}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
         </div>
 
         {status && (

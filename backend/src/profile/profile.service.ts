@@ -8,7 +8,7 @@ export class ProfileService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly i18n: I18nService,
-  ) {}
+  ) { }
   async getProfile(id: number): Promise<ProfileResponseDto> {
     // Logic to retrieve profile information by id
     const profile = await this.prismaService.users.findUnique({
@@ -38,7 +38,10 @@ export class ProfileService {
 
     const updateData: any = {};
     if (location !== undefined) updateData.location = location;
-    if (birthday !== undefined) updateData.birthday = new Date(birthday);
+    if (birthday !== undefined) {
+      // If birthday is empty string, set to null; otherwise convert to Date
+      updateData.birthday = birthday === '' ? null : new Date(birthday);
+    }
     if (email !== undefined) updateData.email = email;
 
     const updatedProfile = await this.prismaService.users.update({

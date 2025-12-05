@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Delete, Body, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, ParseIntPipe, Query, UseGuards, Req } from '@nestjs/common';
 import { ViewHistoryService } from './view_history.service';
 import { User } from 'src/common/types/user';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { SaveViewHistoryRequestDto } from './dtos/save-view-history.request.dto';
 import { ViewHistoryResponseDto, RecentViewHistoryResponseDto } from './dtos/view-history.response.dto';
+import { log } from 'console';
 
 @Controller('view-history')
 export class ViewHistoryController {
@@ -18,10 +19,12 @@ export class ViewHistoryController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async saveViewHistory(
-    @CurrentUser() user: User,
+    @Req() req,
     @Body() saveViewHistoryRequestDto: SaveViewHistoryRequestDto
   ): Promise<ViewHistoryResponseDto> {
-    return this.viewHistoryService.saveViewHistory(user.sub, saveViewHistoryRequestDto);
+    const user = req.user;
+    log('Saving view history for user:', user.id, 'with data:', saveViewHistoryRequestDto);
+    return this.viewHistoryService.saveViewHistory(user.id, saveViewHistoryRequestDto);
   }
 
   /**

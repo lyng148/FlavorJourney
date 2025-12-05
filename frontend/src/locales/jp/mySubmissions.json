@@ -1,0 +1,15 @@
+{
+  "title": "登録した料理",
+  "subtitle": "登録した料理を確認・管理",
+  "overview": "概要",
+  "submissionsList": "料理一覧",
+  "totalSubmissions": "総料理数",
+  "approved": "承認済み",
+  "pending": "審査中",
+  "rejected": "却下",
+  "submittedAt": "提出日",
+  "rejectionReason": "却下理由",
+  "noSubmissions": "まだ料理を登録していません",
+  "loading": "読み込み中...",
+  "error": "エラーが発生しました"
+}
