@@ -18,7 +18,7 @@ import {
 } from 'nestjs-i18n';
 import { join } from 'path';
 import { UploadModule } from './upload/upload.module';
-import { MailerModule } from 'src/mailer/mailer.module';
+import { MailerModule } from './mailer/mailer.module';
 import { TemplateModule } from './template/template.module';
 import { RegionModule } from './region/region.module';
 import { CategoryModule } from './category/category.module';
@@ -64,4 +64,4 @@ import * as fs from 'fs';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

@@ -2,8 +2,8 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@ne
 import { ProfileService } from './profile.service';
 import { ProfileResponseDto } from './dtos/profile.response.dto';
 import { ProfileEditRequestDto } from './dtos/profile-edit.request.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ProfileOwnerGuard } from 'src/auth/guards/profile-owner.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ProfileOwnerGuard } from '../auth/guards/profile-owner.guard';
 
 @Controller('users/profile')
 export class ProfileController {

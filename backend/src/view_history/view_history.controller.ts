@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Delete, Body, Param, ParseIntPipe, Query, UseGuards, Req } from '@nestjs/common';
 import { ViewHistoryService } from './view_history.service';
-import { User } from 'src/common/types/user';
-import { CurrentUser } from 'src/common/decorators/user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { User } from '../common/types/user';
+import { CurrentUser } from '../common/decorators/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SaveViewHistoryRequestDto } from './dtos/save-view-history.request.dto';
 import { ViewHistoryResponseDto, RecentViewHistoryResponseDto } from './dtos/view-history.response.dto';
 import { log } from 'console';

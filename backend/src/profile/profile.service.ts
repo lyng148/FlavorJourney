@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Dish, ProfileResponseDto } from './dtos/profile.response.dto';
 import { I18nService } from 'nestjs-i18n';
 
@@ -8,7 +8,7 @@ export class ProfileService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
   async getProfile(id: number): Promise<ProfileResponseDto> {
     // Logic to retrieve profile information by id
     const profile = await this.prismaService.users.findUnique({

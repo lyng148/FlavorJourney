@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ViewHistoryService } from './view_history.service';
 import { ViewHistoryController } from './view_history.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   controllers: [ViewHistoryController],
